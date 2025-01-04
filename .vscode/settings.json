@@ -1,0 +1,6 @@
+{
+  "r.rterm.linux": "/nix/store/1z4646d1z71m7ladxpdcpa4n2mkh7mc5-python3.12-radian-0.6.13-wrapper/bin/radian",
+  "r.plot.useHttpgd": true,
+  "r.rpath.windows": "sffdgsdfgasdf",
+  "r.rpath.linux": "/nix/store/pfgw2lyq6nif7ldsh61ycd3dm43z2nxv-R-4.4.2-wrapper/bin/R"
+}
