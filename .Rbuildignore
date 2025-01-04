@@ -1,3 +1,8 @@
 ^rankGap\.Rproj$
+^\.envrc$
+^flake.nix$
+^flake.lock$
+^\.direnv/.*$
+^\.vscode/.*$
 ^\.Rproj\.user$
 ^LICENSE\.md$
