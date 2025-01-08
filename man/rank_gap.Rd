@@ -7,11 +7,13 @@
 rank_gap(..., ties_method = "random", nonzero_adj = TRUE)
 }
 \arguments{
-\item{...}{≥2 vectors of input scores. These should all have the same length. (Missing values?)}
+\item{...}{≥2 vectors of input scores. These should all have the same length.
+(Missing values?)}
 
 \item{ties_method}{Method of breaking ties; passed to \code{rank()}}
 
-\item{nonzero_adj}{Whether to adjust ranks to avoid zero values of rank-gap statistics}
+\item{nonzero_adj}{Whether to adjust ranks to avoid zero values of rank-gap
+statistics}
 }
 \value{
 A vector of rank-gap statistics, the same length as the input scores
