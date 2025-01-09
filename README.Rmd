@@ -25,8 +25,8 @@ and plotting the results.
 
 These statistics provide a convenient way to represent greater-than-expected
 concordance among items ranked highly across a number of lists.
-They were developed to understand "overlap" in genomics and high throughput
-biology, but may be useful for other problems.
+They were developed to understand "overlap" and in genomics and high throughput
+biology, but may be useful more broadly.
 
 ## Installation
 
@@ -48,7 +48,6 @@ library(rankGap)
 rank_gap(
   rnorm(1e3), rnorm(1e3)
 ) |> hist()
-
 ```
 
 ### Citation

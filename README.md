@@ -11,8 +11,8 @@ statistics, and plotting the results.
 
 These statistics provide a convenient way to represent
 greater-than-expected concordance among items ranked highly across a
-number of lists. They were developed to understand “overlap” in genomics
-and high throughput biology, but may be useful for other problems.
+number of lists. They were developed to understand “overlap” and in
+genomics and high throughput biology, but may be useful more broadly.
 
 ## Installation
 
