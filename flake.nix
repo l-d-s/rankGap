@@ -38,6 +38,7 @@
           ggplot2
           cowplot
           colorspace
+          forcats
         ];
         rPackageList = vscodeRPackages ++ additionalRPackages;
         radianWrapper = pkgs.radianWrapper.override {

@@ -13,5 +13,8 @@ BugReports: https://github.com/l-d-s/rankGap/issues
 Imports: 
     colorspace,
     cowplot,
+    forcats,
     ggplot2,
-    scales
+    rlang,
+    scales,
+    tibble

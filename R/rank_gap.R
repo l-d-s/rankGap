@@ -20,3 +20,64 @@ rank_gap <- function(..., ties_method = "random", nonzero_adj = TRUE) {
   r_gap <- r_gap_raw**(n_stats - 1)
   return(r_gap)
 }
+
+rank_gap_df <- function(
+    ...,
+    n_max_rank_bins = 1,
+    ties_method = "random",
+    nonzero_adj = TRUE) {
+  signed_stats_list <- list(...)
+  if (is.null(names(signed_stats_list))) {
+    names(signed_stats_list) <- paste0("s", seq_along(signed_stats_list))
+  }
+
+  rank_list <- lapply(
+    signed_stats_list,
+    (\(x) rank(abs(x), ties.method = ties_method))
+  )
+
+  d <- data.frame(signed_stats_list)
+
+  d$concordances <-
+    concordances(...) |>
+    factor(ordered = TRUE)
+
+  d$signs <- signs_pm(...)
+
+  d$r_gap <- do.call(
+    function(...) {
+      rank_gap(..., ties_method = ties_method, nonzero_adj = nonzero_adj)
+    },
+    lapply(signed_stats_list, abs)
+  )
+
+  d$max_rank <- do.call(pmax, rank_list)
+
+  if (n_max_rank_bins != 1) {
+    d$max_rank_bin <- ggplot2::cut_number(
+      d$max_rank,
+      n_max_rank_bins,
+      labels = FALSE
+    ) |>
+      factor(ordered = TRUE)
+  }
+
+  return(tibble::as_tibble(d))
+}
+
+#' @importFrom rlang .data
+rank_gap_hist <- function(
+    ...,
+    n_bins = 30,
+    ties_method = "random",
+    nonzero_adj = TRUE) {
+  d <- rank_gap_df(
+    ...,
+    ties_method = ties_method,
+    nonzero_adj = nonzero_adj
+  )
+
+  gg_phist(d, r_gap, n_bins = n_bins) +
+    ggplot2::aes(fill = .data$signs) +
+    ggplot2::scale_fill_manual(values = tol_colors_alternating)
+}

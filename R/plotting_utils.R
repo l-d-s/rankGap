@@ -1,13 +1,17 @@
 # Theme for plots
-gg_theme <-
-  cowplot::theme_cowplot() +
-  ggplot2::theme_update(
-    strip.background = ggplot2::element_blank(),
-    strip.text.y = ggplot2::element_text(angle = 0),
-    strip.text = ggplot2::element_text(face = "bold"),
-    axis.title.y = ggplot2::element_text(angle = 0, hjust = 0.5, vjust = 0.5),
-    title = ggplot2::element_text(face = "plain", size = 11)
-  )
+#' @importFrom ggplot2 %+replace%
+theme_clean <- function(...) {
+  `%+replace%` <- ggplot2::`%+replace%`
+
+  cowplot::theme_cowplot(...) %+replace%
+    ggplot2::theme(
+      strip.background = ggplot2::element_blank(),
+      strip.text.y = ggplot2::element_text(angle = 0),
+      strip.text = ggplot2::element_text(face = "bold"),
+      axis.title.y = ggplot2::element_text(angle = 0, hjust = 0.5, vjust = 0.5),
+      title = ggplot2::element_text(face = "plain", size = 11)
+    )
+}
 
 gg_hist <- function(
     data,
@@ -17,7 +21,7 @@ gg_hist <- function(
     boundary = NULL,
     ...) {
   ggplot2::ggplot(data, ggplot2::aes({{ x_var }})) +
-    gg_theme +
+    theme_clean() +
     ggplot2::geom_histogram(
       bins = n_bins, color = "white",
       breaks = breaks, boundary = boundary, ...
@@ -44,7 +48,7 @@ scale_y_01 <- ggplot2::scale_y_continuous(
 
 gg_phist <- function(data, x_var, n_bins = 30) {
   ggplot2::ggplot(data, ggplot2::aes({{ x_var }})) +
-    gg_theme +
+    theme_clean() +
     ggplot2::geom_histogram(
       binwidth = 1 / n_bins,
       color = "white",
@@ -65,7 +69,7 @@ gg_phist <- function(data, x_var, n_bins = 30) {
 
 gg_phist_line <- function(data, x_var, n_bins = 30) {
   ggplot2::ggplot(data, ggplot2::aes({{ x_var }})) +
-    gg_theme +
+    theme_clean() +
     ggplot2::stat_bin(
       boundary = 0,
       bins = n_bins,
@@ -87,7 +91,8 @@ gg_phist_line <- function(data, x_var, n_bins = 30) {
 }
 
 gg_phist_density_line <- function(data, x_var, unif_guide = FALSE) {
-  p <- ggplot2::ggplot(data, ggplot2::aes({{ x_var }})) + gg_theme
+  p <- ggplot2::ggplot(data, ggplot2::aes({{ x_var }})) +
+    theme_clean()
 
   if (unif_guide) {
     p <- p + ggplot2::geom_hline(yintercept = 1, color = "grey80")

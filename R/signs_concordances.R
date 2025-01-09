@@ -22,7 +22,9 @@ signs_pm <- function(...) {
   pm <- matrix(c("-", NA, "+")[m + 2], dim(m))
   # Flatten to string
   pm_str <- apply(pm, 1, (\(x) paste0(x, collapse = "")))
-  return(pm_str)
+  pm_fct <- factor(pm_str, ordered = TRUE) |>
+    forcats::fct_reorder(as.numeric(concordances(...)))
+  return(pm_fct)
 }
 
 #' Compute a vector of concordances from a collection of vector inputs
@@ -39,7 +41,8 @@ concordances <- function(...) {
   m <- signs_mat_from_vecs(list(...))
   # Equivalence classes
   grp <- t(apply(m, 1, (\(v) v[1] * v)))
-  pm <- matrix(c("-", NA, "|")[grp + 2], dim(grp))
-  pm_str <- apply(pm, 1, (\(x) paste0(x, collapse = "")))
-  return(pm_str)
+  conc <- matrix(c("-", NA, "|")[grp + 2], dim(grp))
+  conc_str <- apply(conc, 1, (\(x) paste0(x, collapse = "")))
+  conc_fct <- factor(conc_str, ordered = TRUE) |> forcats::fct_rev()
+  return(conc_fct)
 }

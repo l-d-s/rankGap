@@ -3,3 +3,5 @@
 export(concordances)
 export(rank_gap)
 export(signs_pm)
+importFrom(ggplot2,"%+replace%")
+importFrom(rlang,.data)
