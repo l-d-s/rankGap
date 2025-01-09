@@ -43,7 +43,7 @@ rank_gap(
 The method was developed in Leon Di Stefano’s PhD thesis:
 
     @thesis{stefanoTamingInteractionsGenomics2024,
-      title = {Taming {{Interactions}} in {{Genomics}} and {{Clinical Trials}}},
+      title = {Taming Interactions in Genomics and Clinical Trials},
       author = {Di Stefano, Leon S},
       date = {2024-09-04},
       institution = {Johns Hopkins University},
