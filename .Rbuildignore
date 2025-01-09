@@ -4,6 +4,7 @@
 ^flake.lock$
 ^\.direnv/.*$
 ^\.vscode/.*$
+^\.lib_local/.*$
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$

@@ -34,7 +34,12 @@
           # needed for knitr I think
           devtools
         ];
-        rPackageList = vscodeRPackages; # ++ extraRPackages;
+        additionalRPackages = with rPackages; [
+          ggplot2
+          cowplot
+          colorspace
+        ];
+        rPackageList = vscodeRPackages ++ additionalRPackages;
         radianWrapper = pkgs.radianWrapper.override {
             packages = rPackageList;
             };
