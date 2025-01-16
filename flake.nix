@@ -39,6 +39,9 @@
           cowplot
           colorspace
           forcats
+
+          # For development, not the package build
+          tidyverse
         ];
         rPackageList = vscodeRPackages ++ additionalRPackages;
         radianWrapper = pkgs.radianWrapper.override {
