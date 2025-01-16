@@ -21,6 +21,9 @@ rank_gap <- function(..., ties_method = "random", nonzero_adj = TRUE) {
   return(r_gap)
 }
 
+#' Conduct a rank-gap analysis; returns a data frame
+#'
+#' @export
 rank_gap_df <- function(
     ...,
     n_max_rank_bins = 1,
@@ -65,12 +68,20 @@ rank_gap_df <- function(
   return(tibble::as_tibble(d))
 }
 
+#' Produce a rank-gap histogram, with fill mapped to combinations of signs,
+#' from signed input scores
+#' @param ... Signed input scores
+#' @param n_bins Number of histogram bins
+#' @param ties_method,nonzero_adj Arguments passed to `rank_gap()`
+#'
 #' @importFrom rlang .data
+#' @export
 rank_gap_hist <- function(
     ...,
     n_bins = 30,
     ties_method = "random",
     nonzero_adj = TRUE) {
+
   d <- rank_gap_df(
     ...,
     ties_method = ties_method,

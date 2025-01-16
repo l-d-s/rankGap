@@ -2,6 +2,8 @@
 
 export(concordances)
 export(rank_gap)
+export(rank_gap_df)
+export(rank_gap_hist)
 export(signs_pm)
 importFrom(ggplot2,"%+replace%")
 importFrom(rlang,.data)
