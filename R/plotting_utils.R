@@ -130,7 +130,14 @@ tol_colors <- c(
   "#CC6677"
 )
 
-tol_colors_alternating <-
+tol_colors_alternating <- function() {
   # c(rbind(a, b)) interleaves a and b:
   # https://stackoverflow.com/questions/25961897/how-to-merge-2-vectors-alternating-indexes
+  #
+  # Note: this is a function because otherwise we trigger
+  # a "Namespace in Imports field not imported from:  ‘colorspace’"
+  # warning due to a (here unproblematic, I think) _build-time_ dependency on
+  # the colorspace package:
+  # https://github.com/hadley/r-pkgs/issues/203
   c(rbind(tol_colors, colorspace::lighten(tol_colors, 0.5)))
+}

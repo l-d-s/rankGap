@@ -79,5 +79,5 @@ rank_gap_hist <- function(
 
   gg_phist(d, r_gap, n_bins = n_bins) +
     ggplot2::aes(fill = .data$signs) +
-    ggplot2::scale_fill_manual(values = tol_colors_alternating)
+    ggplot2::scale_fill_manual(values = tol_colors_alternating())
 }
