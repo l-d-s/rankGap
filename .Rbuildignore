@@ -7,4 +7,5 @@
 ^\.lib_local/.*$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^NOTES\.md$
 ^README\.Rmd$
