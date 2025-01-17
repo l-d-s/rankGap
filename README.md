@@ -59,7 +59,7 @@ statistics across genes:
 with(d_B_limma, rank_gap_hist(t.KS1, t.KS2, t.RT))
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="45%" />
 
 The `rank_gap_hist` function takes as input *signed* statistics—here
 *t*-values— and generates within-condition ranks and the associated
@@ -95,7 +95,7 @@ with(
 )
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="90%" />
 
 Here you can see that the signal of overlap is concentrated among the
 top 25% of genes based on their maximum rank across the 3 conditions.

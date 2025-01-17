@@ -57,7 +57,7 @@ tibble::tibble(d_B_limma) |> head(5)
 Let's begin by a visualization of the distribution of rank-gap statistics across
 genes:
 
-```{r fig.height=3, fig.width=4}
+```{r fig.height=3, fig.width=4, out.width="45%"}
 with(d_B_limma, rank_gap_hist(t.KS1, t.KS2, t.RT))
 ```
 
@@ -84,7 +84,7 @@ of the ranks is large. However we can more explicitly focus on high-ranked
 genes using the fact that rank-gap statistics are also uniformly distributed
 conditional on the maximum rank:
 
-```{r fig.height=3, fig.width=6.5}
+```{r fig.height=3, fig.width=6.5, out.width="90%"}
 with(
   d_B_limma,
   rank_gap_linehist(
