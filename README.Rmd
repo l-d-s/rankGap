@@ -15,18 +15,57 @@ knitr::opts_chunk$set(
 set.seed(4394)
 ```
 
-# rankGap
+# Rank-gap statistics for exploring high-dimensional overlap
 
 <!-- badges: start -->
 <!-- badges: end -->
 
 This package contains functions for computing rank-gap and related statistics,
-and plotting the results.
+and plotting the results. These statistics provide a convenient way to
+represent greater-than-expected concordance among items ranked highly across
+all of number of lists.
 
-These statistics provide a convenient way to represent greater-than-expected
-concordance among items ranked highly across a number of lists.
-They were developed to understand "overlap" and in genomics and high throughput
-biology, but may be useful more broadly.
+Rank-gap statistics were developed to understand "overlap" and in genomics and
+high throughput biology, but may be useful for exploring multivariate
+distributions in other contexts.
+
+
+## Example
+
+We illustrate the package using data from a comparison of (disease vs.
+wild-type) gene expression differences in mice with three relate genetic
+diseases (Mendelian Disorders of the Epigenetic Machinery, or MDEMs). The data
+are from (Luperchio et. al., 2021); `d_B_limma` contains output from a limma
+reanalysis of the raw read counts.
+
+Importantly, diseased mice were compared with littermate controls, so we expect
+technical errors across the three (disease vs. wilde-type) comparisons to be
+independent.
+
+```{r example}
+library(rankGap)
+library(tibble)
+
+tibble(d_B_limma)
+```
+
+Let's begin by a visualization of the distribution of rank-gap statistics across
+genes:
+
+```{r}
+with(
+  d_B_limma, # Included dataset
+  rank_gap_hist(t.KS1, t.KS2, t.RT)
+)
+```
+
+The spike near 0 in the distribution indicates greater-than-expected concordance
+in the ranks of (absolute) *t*-scores for a given gene across conditions.
+
+The histogram has been stratified by the signs of the t-scores, revealing that
+the excess concordance is among genes with the same signs in all 3 comparisons
+—i.e., either upregulated in all 3 MDEMs or downregulated in all 3 MDEMs.
+
 
 ## Installation
 
@@ -36,18 +75,6 @@ You can install the development version of `rankGap` from
 ``` r
 # install.packages("pak")
 pak::pak("l-d-s/rankGap")
-```
-
-## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-library(rankGap)
-
-rank_gap(
-  rnorm(1e3), rnorm(1e3)
-) |> hist()
 ```
 
 ### Citation
@@ -67,3 +94,9 @@ The method was developed in Leon Di Stefano's PhD thesis:
 }
 ```
 
+### References
+
+1. Luperchio TR, Boukas L, Zhang L, Pilarowski G, Jiang J, Kalinousky A, et al.
+*Leveraging the Mendelian disorders of the epigenetic machinery to
+systematically map functional epigenetic variation*. Dekker J, Barkai N,
+editors. eLife. 2021 Aug 31;10:e65884. doi: 10.7554/eLife.65884
