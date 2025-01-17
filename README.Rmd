@@ -57,7 +57,7 @@ tibble::tibble(d_B_limma) |> head(5)
 Let's begin by a visualization of the distribution of rank-gap statistics across
 genes:
 
-```{r}
+```{r fig.height=3, fig.width=4}
 with(d_B_limma, rank_gap_hist(t.KS1, t.KS2, t.RT))
 ```
 
@@ -67,7 +67,7 @@ statistics from their absolute values.
 
 Rank-gap statistics have *p*-value-like properties: they are (approximately)
 uniformly distributed when gene ranks are independent, and smaller-than-uniform
-when gene ranks are closer than expected by chance. 
+when gene ranks are closer than expected by chance.
 
 Thus, the spike near 0 in the distribution indicates **greater-than-expected
 concordance in the ranks of (absolute) *t*-scores for a given gene across
@@ -79,17 +79,23 @@ comparisons —i.e., either upregulated in all 3 MDEMs or downregulated in all 3
 MDEMs.
 
 As a measure of concordance, rank-gap statistics implicitly emphasize genes
-that are ranked high across all 3 conditions—that is, for which the maximum of
-the ranks is large. However we can more explicitly focus on high-ranked genes
-using the fact that rank-gap statistics are also uniformly distributed
+that are ranked high in any of the 3 conditions—that is, for which the maximum
+of the ranks is large. However we can more explicitly focus on high-ranked
+genes using the fact that rank-gap statistics are also uniformly distributed
 conditional on the maximum rank:
 
-```{r}
-with(d_B_limma, 
+```{r fig.height=3, fig.width=6.5}
+with(
+  d_B_limma,
   rank_gap_linehist(
-    t.KS1, t.KS2, t.RT, 
-    n_max_rank_bins = 4))
+    t.KS1, t.KS2, t.RT,
+    n_max_rank_bins = 4
+  )
+)
 ```
+
+Here you can see that the signal of overlap is concentrated among the top 25%
+of genes based on their maximum rank across the 3 conditions.
 
 (We use "line histograms" here to avoid overplotting.)
 

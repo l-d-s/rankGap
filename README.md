@@ -80,19 +80,25 @@ signs in all 3 comparisons —i.e., either upregulated in all 3 MDEMs or
 downregulated in all 3 MDEMs.
 
 As a measure of concordance, rank-gap statistics implicitly emphasize
-genes that are ranked high across all 3 conditions—that is, for which
+genes that are ranked high in any of the 3 conditions—that is, for which
 the maximum of the ranks is large. However we can more explicitly focus
 on high-ranked genes using the fact that rank-gap statistics are also
 uniformly distributed conditional on the maximum rank:
 
 ``` r
-with(d_B_limma, 
+with(
+  d_B_limma,
   rank_gap_linehist(
-    t.KS1, t.KS2, t.RT, 
-    n_max_rank_bins = 4))
+    t.KS1, t.KS2, t.RT,
+    n_max_rank_bins = 4
+  )
+)
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+Here you can see that the signal of overlap is concentrated among the
+top 25% of genes based on their maximum rank across the 3 conditions.
 
 (We use “line histograms” here to avoid overplotting.)
 
