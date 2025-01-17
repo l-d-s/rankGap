@@ -8,7 +8,8 @@ from signed input scores}
 rank_gap_hist(..., n_bins = 30, ties_method = "random", nonzero_adj = TRUE)
 }
 \arguments{
-\item{...}{Signed input scores}
+\item{...}{Vectors of \emph{signed} input scores; these should be of equal
+length}
 
 \item{n_bins}{Number of histogram bins}
 

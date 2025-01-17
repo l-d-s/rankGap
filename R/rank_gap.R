@@ -2,8 +2,8 @@
 #'
 #' @export
 #'
-#' @param ... ≥2 vectors of input scores. These should all have the same length.
-#' (Missing values?)
+#' @param ... ≥2 vectors of \emph{unsigned} input scores. These should all have
+#' the same length.
 #' @param ties_method Method of breaking ties; passed to `rank()`
 #' @param nonzero_adj Whether to adjust ranks to avoid zero values of rank-gap
 #' statistics
@@ -70,7 +70,8 @@ rank_gap_df <- function(
 
 #' Produce a rank-gap histogram, with fill mapped to combinations of signs,
 #' from signed input scores
-#' @param ... Signed input scores
+#' @param ... Vectors of \emph{signed} input scores; these should be of equal 
+#' length
 #' @param n_bins Number of histogram bins
 #' @param ties_method,nonzero_adj Arguments passed to `rank_gap()`
 #'
@@ -87,17 +88,18 @@ rank_gap_hist <- function(
     nonzero_adj = nonzero_adj
   )
 
-  gg_phist(d, r_gap, n_bins = n_bins) +
+  gg_phist(d, .data$r_gap, n_bins = n_bins) +
     ggplot2::aes(fill = .data$signs) +
     ggplot2::scale_fill_manual(values = tol_colors_alternating())
 }
 
-#' Produce a rank-gap "line-histogram", with fill mapped to combinations of signs,
-#' from signed input scores
-#' @param ... Signed input scores
+#' Produce a rank-gap "line-histogram" based on signed input scores, with fill 
+#' mapped to combinations of signs
+#' @param ... Vectors of \emph{signed} input scores; these should be of equal 
+#' length
 #' @param n_bins Number of histogram bins
 #' @param ties_method,nonzero_adj Arguments passed to `rank_gap()`
-#' @param n_max_rank_bins Number of quantile bins for the maximum rank, to 
+#' @param n_max_rank_bins Number of quantile bins for the maximum rank, to
 #' focus on items ranked high across all input lists
 #'
 #' @importFrom rlang .data
@@ -114,34 +116,70 @@ rank_gap_linehist <- function(
     nonzero_adj = nonzero_adj,
     n_max_rank_bins = n_max_rank_bins
   )
-  
+
   if (n_max_rank_bins == 1) {
     p <- gg_phist_line(d, .data$r_gap, n_bins = n_bins) +
       ggplot2::aes(color = .data$signs) +
       ggplot2::scale_color_manual(values = tol_colors_alternating())
-    
+
     return(p)
   } else {
-    d_max <- d[d$max_rank_bin == n_max_rank_bins, ]
-    d_rest <- d[d$max_rank_bin < n_max_rank_bins, ] |>
-      transform(
-        next_from_top = max_rank_bin == n_max_rank_bins - 1
-      )
+    # Need to separately handle 2 and >2 bins in order to
+    # have "next x%" bin
+    if (n_max_rank_bins == 2) {
+      bin_cat_labels <-
+        paste0(
+          c("top ", "bottom "),
+          signif(
+            100 / (
+              c(1, 1 / (n_max_rank_bins - 1)) *
+                n_max_rank_bins),
+            2
+          ),
+          "%"
+        )
 
-    p_max <- 
-      gg_phist_line(d_max, .data$r_gap, n_bins = n_bins) +
+      d$bin_category <-
+        # Would love a dplyr::case_when solution here...
+        ifelse(
+          d$max_rank_bin == n_max_rank_bins,
+          1, 2
+        ) |>
+        factor(levels = 1:2, labels = bin_cat_labels)
+    } else {
+      bin_cat_labels <-
+        paste0(
+          c("top ", "next ", "bottom "),
+          signif(
+            100 / (
+              c(1, 1, 1 / (n_max_rank_bins - 2)) *
+                n_max_rank_bins),
+            2
+          ),
+          "%"
+        )
+
+      d$bin_category <-
+        # Would love a dplyr::case_when solution here...
+        ifelse(
+          d$max_rank_bin == n_max_rank_bins,
+          1,
+          ifelse(
+            d$max_rank_bin == n_max_rank_bins - 1,
+            2,
+            3
+          )
+        ) |>
+        factor(levels = 1:3, labels = bin_cat_labels)
+    }
+
+
+    p <-
+      gg_phist_line(d, .data$r_gap, n_bins = n_bins) +
       ggplot2::aes(color = .data$signs) +
-      ggplot2::scale_color_manual(values = tol_colors_alternating())
-    
-    p_rest <- gg_phist_line(d_rest, r_gap, n_bins = n_bins) +
-      ggplot2::aes(
-        color = .data$next_from_top,
-        group = interaction(
-          .data$signs,
-          .data$max_rank_bin)) +
-      ggplot2::scale_color_manual(values = c("grey80", "black"))
-    
-    return(patchwork::wrap_plots(p_max,  p_rest, nrow = 1))
-  }
+      ggplot2::scale_color_manual(values = tol_colors_alternating()) +
+      ggplot2::facet_wrap(~ .data$bin_category)
 
+    return(p)
+  }
 }

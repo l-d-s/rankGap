@@ -2,8 +2,8 @@
 % Please edit documentation in R/rank_gap.R
 \name{rank_gap_linehist}
 \alias{rank_gap_linehist}
-\title{Produce a rank-gap "line-histogram", with fill mapped to combinations of signs,
-from signed input scores}
+\title{Produce a rank-gap "line-histogram" based on signed input scores, with fill
+mapped to combinations of signs}
 \usage{
 rank_gap_linehist(
   ...,
@@ -14,7 +14,8 @@ rank_gap_linehist(
 )
 }
 \arguments{
-\item{...}{Signed input scores}
+\item{...}{Vectors of \emph{signed} input scores; these should be of equal
+length}
 
 \item{n_max_rank_bins}{Number of quantile bins for the maximum rank, to
 focus on items ranked high across all input lists}
@@ -24,6 +25,6 @@ focus on items ranked high across all input lists}
 \item{ties_method, nonzero_adj}{Arguments passed to \code{rank_gap()}}
 }
 \description{
-Produce a rank-gap "line-histogram", with fill mapped to combinations of signs,
-from signed input scores
+Produce a rank-gap "line-histogram" based on signed input scores, with fill
+mapped to combinations of signs
 }
