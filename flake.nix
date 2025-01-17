@@ -38,6 +38,7 @@
           ggplot2
           cowplot
           colorspace
+          patchwork
           forcats
 
           # For development, not the package build
