@@ -88,7 +88,7 @@ uniformly distributed conditional on the maximum rank:
 ``` r
 with(
   d_B_limma,
-  rank_gap_linehist(
+  rank_gap_stephist(
     t.KS1, t.KS2, t.RT,
     n_max_rank_bins = 4
   )

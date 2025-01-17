@@ -11,6 +11,15 @@ rank_gap_df(
   nonzero_adj = TRUE
 )
 }
+\arguments{
+\item{...}{Vectors of \emph{signed} input scores; these should be of equal
+length}
+
+\item{n_max_rank_bins}{Number of quantile bins for the maximum rank, to
+focus on items ranked high across all input lists}
+
+\item{ties_method, nonzero_adj}{Arguments passed to \code{rank_gap()}}
+}
 \description{
 Conduct a rank-gap analysis; returns a data frame
 }

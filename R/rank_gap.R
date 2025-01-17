@@ -23,12 +23,18 @@ rank_gap <- function(..., ties_method = "random", nonzero_adj = TRUE) {
 
 #' Conduct a rank-gap analysis; returns a data frame
 #'
+#' @param ... Vectors of \emph{signed} input scores; these should be of equal 
+#' length
+#' @param n_max_rank_bins  Number of quantile bins for the maximum rank, to
+#' focus on items ranked high across all input lists
+#' @param ties_method,nonzero_adj Arguments passed to `rank_gap()`
 #' @export
 rank_gap_df <- function(
     ...,
     n_max_rank_bins = 1,
     ties_method = "random",
-    nonzero_adj = TRUE) {
+    nonzero_adj = TRUE
+    ) {
   signed_stats_list <- list(...)
   if (is.null(names(signed_stats_list))) {
     names(signed_stats_list) <- paste0("s", seq_along(signed_stats_list))
@@ -104,7 +110,7 @@ rank_gap_hist <- function(
 #'
 #' @importFrom rlang .data
 #' @export
-rank_gap_linehist <- function(
+rank_gap_stephist <- function(
     ...,
     n_max_rank_bins = 1,
     n_bins = 30,
@@ -118,7 +124,7 @@ rank_gap_linehist <- function(
   )
 
   if (n_max_rank_bins == 1) {
-    p <- gg_phist_line(d, .data$r_gap, n_bins = n_bins) +
+    p <- gg_phist_step(d, .data$r_gap, n_bins = n_bins) +
       ggplot2::aes(color = .data$signs) +
       ggplot2::scale_color_manual(values = tol_colors_alternating())
 
@@ -175,7 +181,7 @@ rank_gap_linehist <- function(
 
 
     p <-
-      gg_phist_line(d, .data$r_gap, n_bins = n_bins) +
+      gg_phist_step(d, .data$r_gap, n_bins = n_bins) +
       ggplot2::aes(color = .data$signs) +
       ggplot2::scale_color_manual(values = tol_colors_alternating()) +
       ggplot2::facet_wrap(~ .data$bin_category)

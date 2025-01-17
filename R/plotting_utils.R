@@ -7,7 +7,7 @@ theme_clean <- function(...) {
     ggplot2::theme(
       strip.background = ggplot2::element_blank(),
       strip.text.y = ggplot2::element_text(angle = 0),
-      strip.text = ggplot2::element_text(face = "bold"),
+      strip.text = ggplot2::element_text(face = "plain"),
       axis.title.y = ggplot2::element_text(angle = 0, hjust = 0.5, vjust = 0.5),
       title = ggplot2::element_text(face = "plain", size = 11)
     )
@@ -66,14 +66,13 @@ gg_phist <- function(data, x_var, n_bins = 30) {
     ggplot2::ylab("")
 }
 
-
-gg_phist_line <- function(data, x_var, n_bins = 30) {
+gg_phist_step <- function(data, x_var, n_bins = 30) {
   ggplot2::ggplot(data, ggplot2::aes({{ x_var }})) +
     theme_clean() +
     ggplot2::stat_bin(
       boundary = 0,
       bins = n_bins,
-      geom = "line",
+      geom = "step",
       position = "identity"
     ) +
     ggplot2::scale_y_continuous(
