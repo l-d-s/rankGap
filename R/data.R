@@ -1,12 +1,12 @@
 #' MDEM data from B cells
-#' 
+#'
 #' Collated output from an analysis of gene expression differences comparing
 #' mice with three MDEMs (Mendelian disorders of the epigenetic machinery)
 #' with matched wild type littermates.
-#' 
+#'
 #' The analysis was conducted using `limma` and applied only to within-litter
-#' comparisons. 
-#' 
+#' comparisons.
+#'
 #' @format ## `d_B_limma`
 #' A data frame with 13,474 rows and 25 columns:
 #' \describe{
@@ -15,7 +15,7 @@
 #'       Outputs from `limma` with MDEM acronym suffixed (KS1 = Kabuki syndrome
 #'       Type 1; KS2 = Kabuki Syndrome Type 2; RT = Rubenstein-Taybi syndrome)}
 #' }
-#' 
+#'
 #' @source The data are based on a (private) re-analysis of raw expression data from
 #' experiments described in the paper
 #' \preformatted{@article{luperchioLeveragingMendelianDisorders2021,
@@ -31,20 +31,20 @@
 #'  doi = {10.7554/eLife.65884},
 #'  url = {https://doi.org/10.7554/eLife.65884},
 #'  urldate = {2025-01-16},
-#'  abstract = {Although each Mendelian Disorder of the Epigenetic Machinery 
-#'      (MDEM) has a different causative gene, there are shared disease 
-#'      manifestations. We hypothesize that this phenotypic convergence is a 
-#'      consequence of shared epigenetic alterations. To identify such shared 
-#'      alterations, we interrogate chromatin (ATAC-seq) and expression (RNA-seq) 
-#'      states in B cells from three MDEM mouse models (Kabuki [KS] type 1 and 2 and 
-#'      Rubinstein-Taybi type 1 [RT1] syndromes). We develop a new approach for the 
-#'      overlap analysis and find extensive overlap primarily localized in gene 
-#'      promoters. We show that disruption of chromatin accessibility at promoters 
-#'      often disrupts downstream gene expression, and identify 587 loci and 264 
-#'      genes with shared disruption across all three MDEMs. Subtle expression 
-#'      alterations of multiple, IgA-relevant genes, collectively contribute to IgA 
-#'      deficiency in KS1 and RT1, but not in KS2. We propose that the joint study of 
-#'      MDEMs offers a principled approach for systematically mapping functional 
+#'  abstract = {Although each Mendelian Disorder of the Epigenetic Machinery
+#'      (MDEM) has a different causative gene, there are shared disease
+#'      manifestations. We hypothesize that this phenotypic convergence is a
+#'      consequence of shared epigenetic alterations. To identify such shared
+#'      alterations, we interrogate chromatin (ATAC-seq) and expression (RNA-seq)
+#'      states in B cells from three MDEM mouse models (Kabuki [KS] type 1 and 2 and
+#'      Rubinstein-Taybi type 1 [RT1] syndromes). We develop a new approach for the
+#'      overlap analysis and find extensive overlap primarily localized in gene
+#'      promoters. We show that disruption of chromatin accessibility at promoters
+#'      often disrupts downstream gene expression, and identify 587 loci and 264
+#'      genes with shared disruption across all three MDEMs. Subtle expression
+#'      alterations of multiple, IgA-relevant genes, collectively contribute to IgA
+#'      deficiency in KS1 and RT1, but not in KS2. We propose that the joint study of
+#'      MDEMs offers a principled approach for systematically mapping functional
 #'      epigenetic variation in mammals.},
 #'  keywords = {chromatin,computational methods,epigenetics,histone machinery,IgA deficiency,Mendelian},
 #' }}

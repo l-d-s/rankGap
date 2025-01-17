@@ -81,7 +81,6 @@ rank_gap_hist <- function(
     n_bins = 30,
     ties_method = "random",
     nonzero_adj = TRUE) {
-
   d <- rank_gap_df(
     ...,
     ties_method = ties_method,
