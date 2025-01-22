@@ -7,9 +7,9 @@
 <!-- badges: end -->
 
 Rank-gap statistics are easy-to-compute quantities for exploring
-concordance among high-ranked items across multiple ranked lists.
+concordance among high-ranked items across multiple lists.
 
-They were developed to understand “overlap” and in genomics and high
+They were developed for analyzing “overlap” in genomics and high
 throughput biology, and especially to give a simple complement to the
 common “Venn diagrams of significant genes” approach (when errors are
 independent across experiments or conditions). But they may be useful
@@ -19,16 +19,16 @@ more broadly.
 
 We illustrate the package using data from a comparison of (disease vs.
 wild-type) gene expression differences in B cells of mice with three
-related genetic diseases (Mendelian Disorders of the Epigenetic
-Machinery, or MDEMs). Our question is: how much “overlap” is there in
-the gene expression changes across the conditions?
+related genetic diseases from the family of Mendelian Disorders of the
+Epigenetic Machinery, or MDEMs. Our question is: how much “overlap” is
+there in the gene expression changes across the conditions?
 
 Importantly, diseased mice were compared with littermate controls, so we
 expect technical errors across the three (disease vs. wild-type)
 comparisons to be independent.
 
-The data are from Luperchio et. al. (2021); `d_B_limma` contains output
-from limma reanalyses of the raw read counts:
+The data are from Luperchio et. al. (2021). The object `d_B_limma`
+contains output from limma reanalyses of the raw read counts:
 
 ``` r
 library(rankGap)
@@ -76,41 +76,40 @@ venn(m_de) |>
 
 There are only 18 genes detected as differentially expressed in all 3
 conditions (using a threshold of *q* \< 0.2 estimated with the
-Storey-Tibshirani method from `qvalue`).
+Storey-Tibshirani method from `qvalue`). This “vote counting” method (as
+it’s called in the meta-analysis literature) is known to be highly
+conservative when there are many effects with weak signals.
 
 ### Rank-gap statistics
 
-Rank-gap statistics are (apart from a continuity correction) defined for
-each gene $g$ by
+Rank-gap statistics are defined for each gene $g$ by
 
 $$
 \text{rank-gap}_g = \left(
    \frac
-       {[\max(\text{ranks}_g) + 1] - \min(\text{ranks}_g)}
+       {\max(\text{ranks}_g) - \min(\text{ranks}_g) + 1}
        {\max(\text{ranks}_g) + 1}
 \right)^{\text{number of conditions} - 1}
 $$
 
-…where “ranks” refers to the ranks of $g$ in each of the conditions
-under consideration.
-
-Small rank-gap values correspond to genes with similar ranks across all
-of the conditions.
+…where “ranks” in the equation refers to the ranks of $g$ in each of the
+conditions under consideration.
 
 Rank-gap statistics have *p*-value-like properties: they are
 (approximately) uniformly distributed when gene ranks are independent,
 and smaller-than-uniform when gene ranks are closer than expected by
-chance. A similar property holds within strata of
-$\max(\text{ranks}_g)$. Thus we can repurpose techniques from the
-(stratified) multiple testing literature to explore their distribution.
+chance across the conditions. These properties also hold within strata
+of $\max(\text{ranks}_g)$, which represents the importance of a gene in
+*any* of the conditions.
 
-First, we visualize the distribution of rank-gap statistics in our data
-stratified by the signs of the estimated underlying effects.
+We therefore adapt common graphics for displaying *p*-values to explore
+the distribution of rank-gaps.
 
-We create “signed scores” to use as input: the signs of the scores
-should correspond to the estimated direction of effects, and absolute
-values of the scores should correspond to the “importance” of the
-effect; here we signed log *p*-values:
+First, we visualize the distribution of rank-gap statistics in our data,
+stratified by the signs of the estimated underlying effects. We first
+create “signed scores” to use as input: in our case, signed log
+*p*-values. (Note that it can be misleading to use raw log fold-change
+estimates for this purpose; see the thesis chapter for details):
 
 ``` r
 d_B_limma <- transform(
@@ -125,33 +124,32 @@ with(d_B_limma, rank_gap_hist(signed_p_KS1, signed_p_KS2, signed_p_RT))
 
 <img src="man/figures/README-rgap_stacked_hist-1.png" width="45%" />
 
-The spike near 0 in the distribution indicates **greater-than-expected
-concordance in the gene ranks across conditions**. The histogram has
-been stratified by the signs of the estimated log fold-changes,
-revealing that the excess concordance is driven by genes with the same
-signs in all 3 comparisons—i.e., either upregulated in all 3 MDEMs or
-downregulated in all 3 MDEMs—and that there’s evidence of ~hundreds of
-such genes.
+The spike near 0 in the distribution indicates greater-than-expected
+concordance in the gene ranks across conditions. The histogram has been
+stratified by the signs of the estimated log fold-changes, revealing
+that the excess concordance is driven by genes with the same signs in
+all 3 comparisons—i.e., genes either upregulated in all 3 MDEMs or
+downregulated in all 3 MDEMs. The size of the spike is evidence that
+there are of the order of hundreds of such genes.
 
-We can more explicitly focus on these genes using the fact that rank-gap
-statistics are also uniformly distributed conditional on the maximum
-rank. Here we stratify using quartile bins:
+We can focus on genes of interest by stratifying the analysis based on
+the maximum rank statistic. Here we stratify using quartile bins:
 
 ``` r
 with(
   d_B_limma,
-  rank_gap_stephist(signed_p_KS1, signed_p_KS2, signed_p_RT,
-    n_max_rank_bins = 4
-  )
-)
+  rank_gap_stephist(
+    signed_p_KS1, signed_p_KS2, signed_p_RT,
+    n_max_rank_bins = 4))
 ```
 
 <img src="man/figures/README-rgap_stephist-1.png" width="60%" />
 
-We use “line histograms” here to avoid overplotting. Here you can see
-that the signal of overlap is concentrated among the top 25% of genes
-(ordered by maximum rank across the 3 conditions or, loosely,
-“importance in at least one condition”).
+We use “line histograms” to avoid overplotting. The signal of excess
+concordance is concentrated among the top 25% of genes (ordered by
+maximum rank across the 3 conditions or, loosely, “importance in at
+least one condition”), and the specific genes involved may be much more
+easily identified than the Venn diagram analysis suggests.
 
 ## Installation
 
