@@ -6,20 +6,18 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-Rank-gap statistics give a convenient way to explore
-greater-than-expected concordance among high-ranked items across
-multiple lists.
+Rank-gap statistics are easy-to-compute quantities for exploring
+concordance among high-ranked items across multiple ranked lists.
 
-Rank-gap statistics were developed to understand “overlap” and in
-genomics and high throughput biology, and especially to give a simple
-complement to the common “Venn diagrams of significant genes” approach
-when errors are independent across experiments or conditions.
+They were developed to understand “overlap” and in genomics and high
+throughput biology, and especially to give a simple complement to the
+common “Venn diagrams of significant genes” approach (when errors are
+independent across experiments or conditions). But they may be useful
+more broadly.
 
-## Example
+## Example: shared gene expression changes in Mendelian Disorders of the
 
-``` r
-library(rankGap)
-```
+## Epigenetic Machinery
 
 We illustrate the package using data from a comparison of (disease vs.
 wild-type) gene expression differences in B cells of mice with three
@@ -28,13 +26,14 @@ Machinery, or MDEMs). Our question is: how much “overlap” is there in
 the gene expression changes across the conditions?
 
 Importantly, diseased mice were compared with littermate controls, so we
-expect technical errors across the three (disease vs. wilde-type)
+expect technical errors across the three (disease vs. wild-type)
 comparisons to be independent.
 
-The data are from (Luperchio et. al., 2021); `d_B_limma` contains output
+The data are from Luperchio et. al. (2021); `d_B_limma` contains output
 from limma reanalyses of the raw read counts:
 
 ``` r
+library(rankGap)
 tibble::tibble(d_B_limma) |> head(3)
 #> # A tibble: 3 × 25
 #>   ensembl_id  logFC.KS1 AveExpr.KS1 t.KS1 P.Value.KS1 adj.P.Val.KS1 B.KS1 se.KS1
@@ -63,15 +62,15 @@ require(ggplot2)
 #> Loading required package: ggplot2
 
 # Matrix of detected DE indicators
-m_DE <-
+m_de <-
   d_B_limma[c("P.Value.KS1", "P.Value.KS2", "P.Value.RT")] |>
   as.matrix() |>
   apply(2, \(p) qvalue::qvalue(p)$qvalues) |>
   (\(x) x < .2)()
 
-colnames(m_DE) <- c("KS1", "KS2", "RT")
+colnames(m_de) <- c("KS1", "KS2", "RT")
 
-venn(m_DE) |>
+venn(m_de) |>
   plot(quantities = TRUE, fills = FALSE)
 ```
 
@@ -83,24 +82,49 @@ Storey-Tibshirani method from `qvalue`).
 
 ### Rank-gap statistics
 
-Rank-gap statistics are defined for each gene by $$
-\frac{\max(\text{ranks}) - \min(\text{ranks})}{\max(\text{rank across conditions})}^{\text{# conditions} - 1}
-$$ …where “ranks” refers to the ranks of the given gene in each of the
-conditions under consideration (plus a “continuity correction”)
+Rank-gap statistics are (apart from a continuity correction) defined for
+each gene $g$ by
 
-Let’s begin by a visualization of the distribution of rank-gap
-statistics across genes. The relevant function take “signed scores” as
-input: the signs of the scores should correspond to the estimated
-direction of effects, and ranks of the absolute values of the scores
-should correspond to the “importance” of the effect; here we use scores
-based on signed log *p*-values:
+$$
+\text{rank-gap}_g = \left(
+   \frac
+       {\max(\text{ranks}_g) - \min(\text{ranks}_g)}
+       {\max(\text{ranks}_g)}
+\right)^{\text{number of conditions} - 1}
+$$
+
+…where “ranks” refers to the ranks of $g$ in each of the conditions
+under consideration.
+
+Small rank-gap values correspond to genes with similar ranks across all
+of the conditions.
+
+Rank-gap statistics have *p*-value-like properties: they are
+(approximately) uniformly distributed when gene ranks are independent,
+and smaller-than-uniform when gene ranks are closer than expected by
+chance.
+
+Moreover, rank-gap statistics have *p*-value-like properties: they are
+approximately uniformly distributed when ranks are independent—both
+marginally, and conditionally on $\max(\text{ranks}_g)$. Thus we can
+repurpose techniques from the multiple testing literature to explore
+their distribution.
+
+First, we visualize the distribution of rank-gap statistics in our data
+stratified by the signs of the estimated underlying effects.
+
+The relevant functions take “signed scores” as input: the signs of the
+scores should correspond to the estimated direction of effects, and
+ranks of the absolute values of the scores should correspond to the
+“importance” of the effect; here we use scores based on signed log
+*p*-values:
 
 ``` r
 d_B_limma <- transform(
   d_B_limma,
-  signed_p_KS1 = sign(logFC.KS1) * - log(P.Value.KS1),
-  signed_p_KS2 = sign(logFC.KS2) * - log(P.Value.KS2),
-  signed_p_RT  = sign(logFC.RT ) * - log(P.Value.RT )
+  signed_p_KS1 = - sign(logFC.KS1) * log(P.Value.KS1),
+  signed_p_KS2 = - sign(logFC.KS2) * log(P.Value.KS2),
+  signed_p_RT  = - sign(logFC.RT)  * log(P.Value.RT)
   )
 
 with(d_B_limma, rank_gap_hist(signed_p_KS1, signed_p_KS2, signed_p_RT))
@@ -112,19 +136,14 @@ The `rank_gap_hist` function takes as input *signed* statistics—here
 *t*-values— and generates within-condition ranks and the associated
 rank-gap statistics from their absolute values.
 
-Rank-gap statistics have *p*-value-like properties: they are
-(approximately) uniformly distributed when gene ranks are independent,
-and smaller-than-uniform when gene ranks are closer than expected by
-chance.
-
 Thus, the spike near 0 in the distribution indicates
-**greater-than-expected concordance in the ranks of (absolute)
-*t*-scores for a given gene across conditions**.
+**greater-than-expected concordance in the gene ranks across
+conditions**.
 
-The histogram has been stratified by the signs of the *t*-scores,
-revealing that the excess concordance is driven by genes with the same
-signs in all 3 comparisons—i.e., either upregulated in all 3 MDEMs or
-downregulated in all 3 MDEMs.
+The histogram has been stratified by the signs of the estimated log
+fold-changes, revealing that the excess concordance is driven by genes
+with the same signs in all 3 comparisons—i.e., either upregulated in all
+3 MDEMs or downregulated in all 3 MDEMs.
 
 As a measure of concordance, rank-gap statistics implicitly emphasize
 genes that are ranked high in any of the 3 conditions—that is, for which
@@ -156,25 +175,25 @@ You can install the development version of `rankGap` from
 pak::pak("l-d-s/rankGap")
 ```
 
-### Citation
+### Citation & references
 
-The method was developed in Leon Di Stefano’s PhD thesis:
+``` bibtex
+@thesis{diStefanoTamingInteractionsGenomics2024,
+  title = {Taming Interactions in Genomics and Clinical Trials},
+  author = {Di Stefano, Leon S},
+  date = {2024-09-04},
+  institution = {Johns Hopkins University},
+  url = {https://jscholarship.library.jhu.edu/handle/1774.2/70173},
+  urldate = {2025-01-08},
+  abstract = {This dissertation develops statistical methods to address two challenges in contemporary biomedical research. The first is understanding shared mechanisms underlying related diseases using high- throughput molecular data, motivated by a study of gene expression changes in a group of rare genetic disorders called Mendelian Disorders of the Epigenetic Machinery or MDEMs (Luperchio et al., 2021). We develop a simple approach to assessing the degree of overlap among the disorders based on rescaled differences in ranks of each gene across conditions, which we call “rank-gap” statistics. Rank-gap statistics have p-value-like properties that highlight concordance among genes ranked highly in at least one condition, and we argue that the number of smaller than expected rank-gap statistics estimates a meaningful overlap metric in the limit of small measurement error. Rank-gap statistics also possess three- and higher-way analogues. We compare our proposal with other rank-based overlap methods in the literature, and evaluate a diverse group of related methods in a simulation study. Our approach provides a simple complement to the predominant practice in genomics of forming Venn diagrams of statistically significant genes. The second challenge is understanding how treatment effects vary among different types of patients using data from clinical trials. The standard approach—one-at-a-time subgroup or interaction analysis of candidate covariates—suffers from difficulties of inference and interpretation. We develop the proportional interaction model, a parsimonious extension of additive regression adjustment also considered by Follmann and Proschan (1999) and Kovalchik, Varadhan, and Weiss (2013) in which benefits and harms from treatment vary as a function of a “score” that also predicts outcomes in each treatment group. An asymptotic analysis enables us to assess the sample sizes required to detect proportional interactions in practice, and we propose a symmetrical re-parametrization of the model that allows for stable single-step inference. We re-analyze a clinical trial of treatments for schizophrenia using our approach, showing how proportional interactions can be incorporated into a traditional regression model-building framework.},
+  langid = {american}
+}
+```
 
-    @thesis{stefanoTamingInteractionsGenomics2024,
-      title = {Taming Interactions in Genomics and Clinical Trials},
-      author = {Di Stefano, Leon S},
-      date = {2024-09-04},
-      institution = {Johns Hopkins University},
-      url = {https://jscholarship.library.jhu.edu/handle/1774.2/70173},
-      urldate = {2025-01-08},
-      abstract = {This dissertation develops statistical methods to address two challenges in contemporary biomedical research. The first is understanding shared mechanisms underlying related diseases using high- throughput molecular data, motivated by a study of gene expression changes in a group of rare genetic disorders called Mendelian Disorders of the Epigenetic Machinery or MDEMs (Luperchio et al., 2021). We develop a simple approach to assessing the degree of overlap among the disorders based on rescaled differences in ranks of each gene across conditions, which we call “rank-gap” statistics. Rank-gap statistics have p-value-like properties that highlight concordance among genes ranked highly in at least one condition, and we argue that the number of smaller than expected rank-gap statistics estimates a meaningful overlap metric in the limit of small measurement error. Rank-gap statistics also possess three- and higher-way analogues. We compare our proposal with other rank-based overlap methods in the literature, and evaluate a diverse group of related methods in a simulation study. Our approach provides a simple complement to the predominant practice in genomics of forming Venn diagrams of statistically significant genes. The second challenge is understanding how treatment effects vary among different types of patients using data from clinical trials. The standard approach—one-at-a-time subgroup or interaction analysis of candidate covariates—suffers from difficulties of inference and interpretation. We develop the proportional interaction model, a parsimonious extension of additive regression adjustment also considered by Follmann and Proschan (1999) and Kovalchik, Varadhan, and Weiss (2013) in which benefits and harms from treatment vary as a function of a “score” that also predicts outcomes in each treatment group. An asymptotic analysis enables us to assess the sample sizes required to detect proportional interactions in practice, and we propose a symmetrical re-parametrization of the model that allows for stable single-step inference. We re-analyze a clinical trial of treatments for schizophrenia using our approach, showing how proportional interactions can be incorporated into a traditional regression model-building framework.},
-      langid = {american}
-    }
+The data are from
 
-### References
-
-1.  Luperchio TR, Boukas L, Zhang L, Pilarowski G, Jiang J, Kalinousky
-    A, et al. *Leveraging the Mendelian disorders of the epigenetic
-    machinery to systematically map functional epigenetic variation*.
-    Dekker J, Barkai N, editors. eLife. 2021 Aug 31;10:e65884. doi:
-    10.7554/eLife.65884
+- Luperchio TR, Boukas L, Zhang L, Pilarowski G, Jiang J, Kalinousky A,
+  et al. *Leveraging the Mendelian disorders of the epigenetic machinery
+  to systematically map functional epigenetic variation*. Dekker J,
+  Barkai N, editors. eLife. 2021 Aug 31;10:e65884. doi:
+  10.7554/eLife.65884
