@@ -32,6 +32,8 @@ gg_hist <- function(
     )
 }
 
+
+
 # Scales for p-value-like quantities
 
 scale_x_01 <- ggplot2::scale_x_continuous(
@@ -66,7 +68,7 @@ gg_phist <- function(data, x_var, n_bins = 30) {
     ggplot2::ylab("")
 }
 
-gg_phist_step <- function(data, x_var, n_bins = 30) {
+gg_p_hist_step <- function(data, x_var, n_bins = 30) {
   ggplot2::ggplot(data, ggplot2::aes({{ x_var }})) +
     theme_clean() +
     ggplot2::stat_bin(
@@ -89,7 +91,7 @@ gg_phist_step <- function(data, x_var, n_bins = 30) {
     ggplot2::ylab("")
 }
 
-gg_phist_density_line <- function(data, x_var, unif_guide = FALSE) {
+gg_p_density_line <- function(data, x_var, unif_guide = FALSE) {
   p <- ggplot2::ggplot(data, ggplot2::aes({{ x_var }})) +
     theme_clean()
 
@@ -108,24 +110,13 @@ gg_phist_density_line <- function(data, x_var, unif_guide = FALSE) {
       expand = ggplot2::expansion(c(0, .1)),
       limits = c(0, NA)
     ) +
-    ggplot2::scale_x_continuous(
-      breaks = c(0, .5, 1),
-      labels = c("0", ".5", "1"),
-      limits = c(0, 1),
-      expand = ggplot2::expansion(c(0, 0))
-    ) +
+    scale_x_01 +
     ggplot2::ylab("")
 }
 
 tol_colors <- c(
-  "#117733",
-  "#332288",
-  "#AA4499",
-  "#999933",
-  "#44AA99",
-  "#882255",
-  "#88CCEE",
-  "#DDCC77",
+  "#117733", "#332288", "#AA4499", "#999933",
+  "#44AA99", "#882255", "#88CCEE", "#DDCC77",
   "#CC6677"
 )
 
@@ -139,4 +130,13 @@ tol_colors_alternating <- function() {
   # the colorspace package:
   # https://github.com/hadley/r-pkgs/issues/203
   c(rbind(tol_colors, colorspace::lighten(tol_colors, 0.5)))
+}
+
+
+stone_colors <- 
+  c("#396AB1", "#DA7C30", "#3E9651", "#CC2529",
+    "#535154", "#6B4C9A", "#922428", "#948B3D")
+
+stone_colors_alternating <- function() {
+  c(rbind(stone_colors, colorspace::lighten(tol_colors, 0.5)))
 }
