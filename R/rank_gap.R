@@ -23,7 +23,7 @@ rank_gap <- function(..., ties_method = "random", nonzero_adj = TRUE) {
 
 #' Conduct a rank-gap analysis; returns a data frame
 #'
-#' @param ... Vectors of \emph{signed} input scores; these should be of equal 
+#' @param ... Vectors of \emph{signed} input scores; these should be of equal
 #' length
 #' @param n_max_rank_bins  Number of quantile bins for the maximum rank, to
 #' focus on items ranked high across all input lists
@@ -33,8 +33,7 @@ rank_gap_df <- function(
     ...,
     n_max_rank_bins = 1,
     ties_method = "random",
-    nonzero_adj = TRUE
-    ) {
+    nonzero_adj = TRUE) {
   signed_stats_list <- list(...)
   if (is.null(names(signed_stats_list))) {
     names(signed_stats_list) <- paste0("s", seq_along(signed_stats_list))

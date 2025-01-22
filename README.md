@@ -15,9 +15,7 @@ common “Venn diagrams of significant genes” approach (when errors are
 independent across experiments or conditions). But they may be useful
 more broadly.
 
-## Example: shared gene expression changes in Mendelian Disorders of the
-
-## Epigenetic Machinery
+## Example: shared gene expression changes in Mendelian Disorders of the Epigenetic Machinery
 
 We illustrate the package using data from a comparison of (disease vs.
 wild-type) gene expression differences in B cells of mice with three
@@ -122,10 +120,10 @@ ranks of the absolute values of the scores should correspond to the
 ``` r
 d_B_limma <- transform(
   d_B_limma,
-  signed_p_KS1 = - sign(logFC.KS1) * log(P.Value.KS1),
-  signed_p_KS2 = - sign(logFC.KS2) * log(P.Value.KS2),
-  signed_p_RT  = - sign(logFC.RT)  * log(P.Value.RT)
-  )
+  signed_p_KS1 = -sign(logFC.KS1) * log(P.Value.KS1),
+  signed_p_KS2 = -sign(logFC.KS2) * log(P.Value.KS2),
+  signed_p_RT  = -sign(logFC.RT) * log(P.Value.RT)
+)
 
 with(d_B_limma, rank_gap_hist(signed_p_KS1, signed_p_KS2, signed_p_RT))
 ```
@@ -152,9 +150,12 @@ on high-ranked genes using the fact that rank-gap statistics are also
 uniformly distributed conditional on the maximum rank:
 
 ``` r
-with(d_B_limma, 
-  rank_gap_stephist(signed_p_KS1, signed_p_KS2, signed_p_RT, 
-  n_max_rank_bins = 4))
+with(
+  d_B_limma,
+  rank_gap_stephist(signed_p_KS1, signed_p_KS2, signed_p_RT,
+    n_max_rank_bins = 4
+  )
+)
 ```
 
 <img src="man/figures/README-rgap_stephist-1.png" width="60%" />

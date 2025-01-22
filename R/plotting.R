@@ -1,6 +1,6 @@
 #' Produce a rank-gap histogram, with fill mapped to combinations of signs,
 #' from signed input scores
-#' @param ... Vectors of \emph{signed} input scores; these should be of equal 
+#' @param ... Vectors of \emph{signed} input scores; these should be of equal
 #' length
 #' @param n_bins Number of histogram bins
 #' @param ties_method,nonzero_adj Arguments passed to `rank_gap()`
@@ -23,9 +23,9 @@ rank_gap_hist <- function(
     ggplot2::scale_fill_manual(values = tol_colors_alternating())
 }
 
-#' Produce a rank-gap "line-histogram" based on signed input scores, with fill 
+#' Produce a rank-gap "line-histogram" based on signed input scores, with fill
 #' mapped to combinations of signs
-#' @param ... Vectors of \emph{signed} input scores; these should be of equal 
+#' @param ... Vectors of \emph{signed} input scores; these should be of equal
 #' length
 #' @param n_bins Number of histogram bins
 #' @param ties_method,nonzero_adj Arguments passed to `rank_gap()`
@@ -48,7 +48,7 @@ rank_gap_stephist <- function(
   )
 
   if (n_max_rank_bins == 1) {
-    p <- 
+    p <-
       gg_p_hist_step(d, .data$r_gap, n_bins = n_bins) +
       ggplot2::aes(color = .data$signs) +
       ggplot2::scale_color_manual(values = tol_colors_alternating())

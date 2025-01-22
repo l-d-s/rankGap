@@ -133,9 +133,11 @@ tol_colors_alternating <- function() {
 }
 
 
-stone_colors <- 
-  c("#396AB1", "#DA7C30", "#3E9651", "#CC2529",
-    "#535154", "#6B4C9A", "#922428", "#948B3D")
+stone_colors <-
+  c(
+    "#396AB1", "#DA7C30", "#3E9651", "#CC2529",
+    "#535154", "#6B4C9A", "#922428", "#948B3D"
+  )
 
 stone_colors_alternating <- function() {
   c(rbind(stone_colors, colorspace::lighten(tol_colors, 0.5)))
