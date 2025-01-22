@@ -6,16 +6,14 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-This package contains functions for computing rank-gap and related
-statistics, and plotting the results. These statistics provide a
-convenient way to represent greater-than-expected concordance among
-items ranked highly across all of number of lists.
+Rank-gap statistics give a convenient way to explore
+greater-than-expected concordance among high-ranked items across
+multiple lists.
 
 Rank-gap statistics were developed to understand “overlap” and in
-genomics and high throughput biology, and in particular to complement
-the widespread use of Venn diagrams for this purpose when errors are
-independent across experiments or conditions. But we expect they may be
-useful for exploring multivariate distributions in other contexts.
+genomics and high throughput biology, and especially to give a simple
+complement to the common “Venn diagrams of significant genes” approach
+when errors are independent across experiments or conditions.
 
 ## Example
 
@@ -24,15 +22,17 @@ library(rankGap)
 ```
 
 We illustrate the package using data from a comparison of (disease vs.
-wild-type) gene expression differences in mice with three relate genetic
-diseases (Mendelian Disorders of the Epigenetic Machinery, or MDEMs).
+wild-type) gene expression differences in B cells of mice with three
+related genetic diseases (Mendelian Disorders of the Epigenetic
+Machinery, or MDEMs). Our question is: how much “overlap” is there in
+the gene expression changes across the conditions?
 
 Importantly, diseased mice were compared with littermate controls, so we
 expect technical errors across the three (disease vs. wilde-type)
 comparisons to be independent.
 
 The data are from (Luperchio et. al., 2021); `d_B_limma` contains output
-from a limma reanalysis of the raw read counts:
+from limma reanalyses of the raw read counts:
 
 ``` r
 tibble::tibble(d_B_limma) |> head(3)
@@ -49,14 +49,64 @@ tibble::tibble(d_B_limma) |> head(3)
 #> #   B.RT <dbl>, se.RT <dbl>, se_unshrunk.RT <dbl>
 ```
 
-Let’s begin by a visualization of the distribution of rank-gap
-statistics across genes:
+### Venn diagrams of significant genes
+
+We start with with the standard approach in computational biology of
+computing Venn diagrams of (margianlly) statistically significant genes:
 
 ``` r
-with(d_B_limma, rank_gap_hist(t.KS1, t.KS2, t.RT))
+require(eulerr)
+#> Loading required package: eulerr
+require(qvalue)
+#> Loading required package: qvalue
+require(ggplot2)
+#> Loading required package: ggplot2
+
+# Matrix of detected DE indicators
+m_DE <-
+  d_B_limma[c("P.Value.KS1", "P.Value.KS2", "P.Value.RT")] |>
+  as.matrix() |>
+  apply(2, \(p) qvalue::qvalue(p)$qvalues) |>
+  (\(x) x < .2)()
+
+colnames(m_DE) <- c("KS1", "KS2", "RT")
+
+venn(m_DE) |>
+  plot(quantities = TRUE, fills = FALSE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="45%" />
+<img src="man/figures/README-venn_diagram-1.png" width="35%" />
+
+There are only 18 genes detected as differentially expressed in all 3
+conditions (using a threshold of *q* \< 0.2 estimated with the
+Storey-Tibshirani method from `qvalue`).
+
+### Rank-gap statistics
+
+Rank-gap statistics are defined for each gene by $$
+\frac{\max(\text{ranks}) - \min(\text{ranks})}{\max(\text{rank across conditions})}^{\text{# conditions} - 1}
+$$ …where “ranks” refers to the ranks of the given gene in each of the
+conditions under consideration (plus a “continuity correction”)
+
+Let’s begin by a visualization of the distribution of rank-gap
+statistics across genes. The relevant function take “signed scores” as
+input: the signs of the scores should correspond to the estimated
+direction of effects, and ranks of the absolute values of the scores
+should correspond to the “importance” of the effect; here we use scores
+based on signed log *p*-values:
+
+``` r
+d_B_limma <- transform(
+  d_B_limma,
+  signed_p_KS1 = sign(logFC.KS1) * - log(P.Value.KS1),
+  signed_p_KS2 = sign(logFC.KS2) * - log(P.Value.KS2),
+  signed_p_RT  = sign(logFC.RT ) * - log(P.Value.RT )
+  )
+
+with(d_B_limma, rank_gap_hist(signed_p_KS1, signed_p_KS2, signed_p_RT))
+```
+
+<img src="man/figures/README-rgap_stacked_hist-1.png" width="45%" />
 
 The `rank_gap_hist` function takes as input *signed* statistics—here
 *t*-values— and generates within-condition ranks and the associated
@@ -83,50 +133,18 @@ on high-ranked genes using the fact that rank-gap statistics are also
 uniformly distributed conditional on the maximum rank:
 
 ``` r
-with(d_B_limma, rank_gap_stephist(t.KS1, t.KS2, t.RT, n_max_rank_bins = 4))
+with(d_B_limma, 
+  rank_gap_stephist(signed_p_KS1, signed_p_KS2, signed_p_RT, 
+  n_max_rank_bins = 4))
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="60%" />
+<img src="man/figures/README-rgap_stephist-1.png" width="60%" />
 
 Here you can see that the signal of overlap is concentrated among the
 top 25% of genes (ordered by maximum rank across the 3 conditions or,
 loosely, “importance in any condition”).
 
 (We use “line histograms” here to avoid overplotting.)
-
-### Comparison with Venn diagrams of significant genes
-
-Let’s compare this with the standard approach in computational biology
-of computing Venn diagrams of (margianlly) statistically significant
-genes (with *q*-values \< 0.2 as estimated by `qvalue`):
-
-``` r
-require(eulerr)
-#> Loading required package: eulerr
-require(qvalue)
-#> Loading required package: qvalue
-require(ggplot2)
-#> Loading required package: ggplot2
-
-# Matrix of detected DE indicators
-m_DE <-
-  d_B_limma[c("P.Value.KS1", "P.Value.KS2", "P.Value.RT")] |>
-  as.matrix() |>
-  apply(2, \(p) qvalue::qvalue(p)$qvalues) |>
-  (\(x) x < .2)()
-
-colnames(m_DE) <- c("KS1", "KS2", "RT")
-
-venn(m_DE) |>
-  plot(quantities = TRUE, fills = FALSE) |>
-  cowplot::plot_grid() +
-  ggplot2::theme(plot.margin = ggplot2::margin(10, 10, 10, 10))
-```
-
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="35%" />
-
-There are very few genes detected as differentially expressed in all 3
-conditions.
 
 ## Installation
 
