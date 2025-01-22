@@ -20,7 +20,7 @@ rank_gap_hist <- function(
 
   gg_phist(d, .data$r_gap, n_bins = n_bins) +
     ggplot2::aes(fill = .data$signs) +
-    ggplot2::scale_fill_manual(values = tol_colors_alternating())
+    ggplot2::scale_fill_manual(values = stone_colors_alternating())
 }
 
 #' Produce a rank-gap "line-histogram" based on signed input scores, with fill
@@ -51,7 +51,7 @@ rank_gap_stephist <- function(
     p <-
       gg_p_hist_step(d, .data$r_gap, n_bins = n_bins) +
       ggplot2::aes(color = .data$signs) +
-      ggplot2::scale_color_manual(values = tol_colors_alternating())
+      ggplot2::scale_color_manual(values = stone_colors_alternating())
 
     return(p)
   } else {
@@ -108,7 +108,7 @@ rank_gap_stephist <- function(
     p <-
       gg_p_hist_step(d, .data$r_gap, n_bins = n_bins) +
       ggplot2::aes(color = .data$signs) +
-      ggplot2::scale_color_manual(values = tol_colors_alternating()) +
+      ggplot2::scale_color_manual(values = stone_colors_alternating()) +
       ggplot2::facet_wrap(~ .data$bin_category)
 
     return(p)

@@ -121,6 +121,8 @@ tol_colors <- c(
 )
 
 tol_colors_alternating <- function() {
+  # Colorblind-friendly palette
+  #
   # c(rbind(a, b)) interleaves a and b:
   # https://stackoverflow.com/questions/25961897/how-to-merge-2-vectors-alternating-indexes
   #
@@ -140,5 +142,5 @@ stone_colors <-
   )
 
 stone_colors_alternating <- function() {
-  c(rbind(stone_colors, colorspace::lighten(tol_colors, 0.5)))
+  c(rbind(stone_colors, colorspace::lighten(stone_colors, 0.5)))
 }
