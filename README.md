@@ -162,7 +162,7 @@ with(d_B_limma,
     n_max_rank_bins = 4))
 ```
 
-<img src="man/figures/README-rgap_qq-1.png" width="70%" />
+<img src="man/figures/README-rgap_qq-1.png" width="80%" />
 
 ## Installation
 
@@ -174,7 +174,9 @@ You can install the development version of `rankGap` from
 pak::pak("l-d-s/rankGap")
 ```
 
-### Citation & references
+## References
+
+This package is based on
 
 ``` bibtex
 @thesis{diStefanoTamingInteractionsGenomics2024,
