@@ -86,8 +86,8 @@ each gene $g$ by
 $$
 \text{rank-gap}_g = \left(
    \frac
-       {\max(\text{ranks}_g) - \min(\text{ranks}_g)}
-       {\max(\text{ranks}_g)}
+       {[\max(\text{ranks}_g) + 1] - \min(\text{ranks}_g)}
+       {\max(\text{ranks}_g) + 1}
 \right)^{\text{number of conditions} - 1}
 $$
 
@@ -100,22 +100,17 @@ of the conditions.
 Rank-gap statistics have *p*-value-like properties: they are
 (approximately) uniformly distributed when gene ranks are independent,
 and smaller-than-uniform when gene ranks are closer than expected by
-chance.
-
-Moreover, rank-gap statistics have *p*-value-like properties: they are
-approximately uniformly distributed when ranks are independent—both
-marginally, and conditionally on $\max(\text{ranks}_g)$. Thus we can
-repurpose techniques from the multiple testing literature to explore
-their distribution.
+chance. A similar property holds within strata of
+$\max(\text{ranks}_g)$. Thus we can repurpose techniques from the
+(stratified) multiple testing literature to explore their distribution.
 
 First, we visualize the distribution of rank-gap statistics in our data
 stratified by the signs of the estimated underlying effects.
 
-The relevant functions take “signed scores” as input: the signs of the
-scores should correspond to the estimated direction of effects, and
-ranks of the absolute values of the scores should correspond to the
-“importance” of the effect; here we use scores based on signed log
-*p*-values:
+We create “signed scores” to use as input: the signs of the scores
+should correspond to the estimated direction of effects, and absolute
+values of the scores should correspond to the “importance” of the
+effect; here we signed log *p*-values:
 
 ``` r
 d_B_limma <- transform(
@@ -130,24 +125,17 @@ with(d_B_limma, rank_gap_hist(signed_p_KS1, signed_p_KS2, signed_p_RT))
 
 <img src="man/figures/README-rgap_stacked_hist-1.png" width="45%" />
 
-The `rank_gap_hist` function takes as input *signed* statistics—here
-*t*-values— and generates within-condition ranks and the associated
-rank-gap statistics from their absolute values.
+The spike near 0 in the distribution indicates **greater-than-expected
+concordance in the gene ranks across conditions**. The histogram has
+been stratified by the signs of the estimated log fold-changes,
+revealing that the excess concordance is driven by genes with the same
+signs in all 3 comparisons—i.e., either upregulated in all 3 MDEMs or
+downregulated in all 3 MDEMs—and that there’s evidence of ~hundreds of
+such genes.
 
-Thus, the spike near 0 in the distribution indicates
-**greater-than-expected concordance in the gene ranks across
-conditions**.
-
-The histogram has been stratified by the signs of the estimated log
-fold-changes, revealing that the excess concordance is driven by genes
-with the same signs in all 3 comparisons—i.e., either upregulated in all
-3 MDEMs or downregulated in all 3 MDEMs.
-
-As a measure of concordance, rank-gap statistics implicitly emphasize
-genes that are ranked high in any of the 3 conditions—that is, for which
-the maximum of the ranks is large. However we can more explicitly focus
-on high-ranked genes using the fact that rank-gap statistics are also
-uniformly distributed conditional on the maximum rank:
+We can more explicitly focus on these genes using the fact that rank-gap
+statistics are also uniformly distributed conditional on the maximum
+rank. Here we stratify using quartile bins:
 
 ``` r
 with(
@@ -160,11 +148,10 @@ with(
 
 <img src="man/figures/README-rgap_stephist-1.png" width="60%" />
 
-Here you can see that the signal of overlap is concentrated among the
-top 25% of genes (ordered by maximum rank across the 3 conditions or,
-loosely, “importance in any condition”).
-
-(We use “line histograms” here to avoid overplotting.)
+We use “line histograms” here to avoid overplotting. Here you can see
+that the signal of overlap is concentrated among the top 25% of genes
+(ordered by maximum rank across the 3 conditions or, loosely,
+“importance in at least one condition”).
 
 ## Installation
 
