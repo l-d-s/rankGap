@@ -15,7 +15,32 @@ common “Venn diagrams of significant genes” approach (when errors are
 independent across experiments or conditions). But they may be useful
 more broadly.
 
-## Example: shared gene expression changes in Mendelian Disorders of the Epigenetic Machinery
+In a genomics context we are often comparing ranked lists of genes
+across multiple conditions or experiments. Rank-gap statistics are
+defined for each gene $g$ by
+
+$$
+\text{rank-gap}_g = \left(
+   \frac
+       {\max(\text{ranks}_g) - \min(\text{ranks}_g) + 1}
+       {\max(\text{ranks}_g) + 1}
+\right)^{\text{number of conditions} - 1}
+$$
+
+…where “ranks” in the equation refers to the ranks of $g$ in each of the
+conditions under consideration.
+
+Rank-gap statistics have *p*-value-like properties: they are
+(approximately) uniformly distributed when gene ranks are independent,
+and smaller-than-uniform when gene ranks are closer than expected by
+chance across the conditions. These properties also hold within strata
+of $\max(\text{ranks}_g)$, which represents the importance of a gene in
+*any* of the conditions.
+
+We therefore adapt common graphics for displaying *p*-values to explore
+their distribution.
+
+## Example: overlapping gene expression changes in Mendelian Disorders of the Epigenetic Machinery
 
 We illustrate the package using data from a comparison of (disease vs.
 wild-type) gene expression differences in B cells of mice with three
@@ -80,30 +105,7 @@ Storey-Tibshirani method from `qvalue`). This “vote counting” method (as
 it’s called in the meta-analysis literature) is known to be highly
 conservative when there are many effects with weak signals.
 
-### Rank-gap statistics
-
-Rank-gap statistics are defined for each gene $g$ by
-
-$$
-\text{rank-gap}_g = \left(
-   \frac
-       {\max(\text{ranks}_g) - \min(\text{ranks}_g) + 1}
-       {\max(\text{ranks}_g) + 1}
-\right)^{\text{number of conditions} - 1}
-$$
-
-…where “ranks” in the equation refers to the ranks of $g$ in each of the
-conditions under consideration.
-
-Rank-gap statistics have *p*-value-like properties: they are
-(approximately) uniformly distributed when gene ranks are independent,
-and smaller-than-uniform when gene ranks are closer than expected by
-chance across the conditions. These properties also hold within strata
-of $\max(\text{ranks}_g)$, which represents the importance of a gene in
-*any* of the conditions.
-
-We therefore adapt common graphics for displaying *p*-values to explore
-the distribution of rank-gaps.
+### Analysis with rank-gap statistics
 
 First, we visualize the distribution of rank-gap statistics in our data,
 stratified by the signs of the estimated underlying effects. We first
