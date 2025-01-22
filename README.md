@@ -153,6 +153,17 @@ maximum rank across the 3 conditions or, loosely, “importance in at
 least one condition”), and the specific genes involved may be much more
 easily identified than the Venn diagram analysis suggests.
 
+One way to do this is with a stratified *Q-Q* plot:
+
+``` r
+with(d_B_limma,
+  rank_gap_qq(
+    signed_p_KS1, signed_p_KS2, signed_p_RT,
+    n_max_rank_bins = 4))
+```
+
+<img src="man/figures/README-rgap_qq-1.png" width="70%" />
+
 ## Installation
 
 You can install the development version of `rankGap` from

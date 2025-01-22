@@ -30,7 +30,7 @@ rank_gap_hist <- function(
 #' @param n_bins Number of histogram bins
 #' @param ties_method,nonzero_adj Arguments passed to `rank_gap()`
 #' @param n_max_rank_bins Number of quantile bins for the maximum rank, to
-#' focus on items ranked high across all input lists
+#' focus on items ranked high in at least one list
 #'
 #' @importFrom rlang .data
 #' @export
@@ -110,6 +110,106 @@ rank_gap_stephist <- function(
       ggplot2::aes(color = .data$signs) +
       ggplot2::scale_color_manual(values = stone_colors_alternating()) +
       ggplot2::facet_wrap(~ .data$bin_category)
+
+    return(p)
+  }
+}
+
+#' Produce a QQ plot of rank-gap statistics with color mapped to combinations
+#' of signs.
+#' @param ... Vectors of \emph{signed} input scores; these should be of equal
+#' length
+#' @param ties_method,nonzero_adj Arguments passed to `rank_gap()`
+#' @param n_max_rank_bins Number of quantile bins for the maximum rank, to
+#' focus on items ranked high in at least one list
+#'
+#' @importFrom rlang .data
+#' @export
+rank_gap_qq <- function(
+    ...,
+    n_max_rank_bins = 1,
+    ties_method = "random",
+    nonzero_adj = TRUE) {
+  d <- rank_gap_df(
+    ...,
+    ties_method = ties_method,
+    nonzero_adj = nonzero_adj,
+    n_max_rank_bins = n_max_rank_bins
+  )
+
+  if (n_max_rank_bins == 1) {
+    p <-
+      ggplot2::ggplot(d, ggplot2::aes(sample = -log(.data$r_gap))) +
+      ggplot2::geom_abline(color = "grey90") +
+      ggplot2::stat_qq(distribution = stats::qexp) +
+      ggplot2::aes(color = .data$signs) +
+      ggplot2::scale_color_manual(values = stone_colors_alternating()) +
+      theme_clean() +
+      ggplot2::coord_equal() +
+      ggplot2::theme(aspect.ratio = 1)
+
+    return(p)
+  } else {
+    # Need to separately handle 2 and >2 bins in order to
+    # have "next x%" bin
+    if (n_max_rank_bins == 2) {
+      bin_cat_labels <-
+        paste0(
+          c("top ", "bottom "),
+          signif(
+            100 / (
+              c(1, 1 / (n_max_rank_bins - 1)) *
+                n_max_rank_bins),
+            2
+          ),
+          "%"
+        )
+
+      d$bin_category <-
+        # Would love a dplyr::case_when solution here...
+        ifelse(
+          d$max_rank_bin == n_max_rank_bins,
+          1, 2
+        ) |>
+        factor(levels = 1:2, labels = bin_cat_labels)
+    } else {
+      bin_cat_labels <-
+        paste0(
+          c("top ", "next ", "bottom "),
+          signif(
+            100 / (
+              c(1, 1, 1 / (n_max_rank_bins - 2)) *
+                n_max_rank_bins),
+            2
+          ),
+          "%"
+        )
+
+      d$bin_category <-
+        # Would love a dplyr::case_when solution here...
+        ifelse(
+          d$max_rank_bin == n_max_rank_bins,
+          1,
+          ifelse(
+            d$max_rank_bin == n_max_rank_bins - 1,
+            2,
+            3
+          )
+        ) |>
+        factor(levels = 1:3, labels = bin_cat_labels)
+    }
+
+
+    p <-
+      ggplot2::ggplot(d, ggplot2::aes(sample = -log(.data$r_gap))) +
+      ggplot2::geom_abline(color = "grey90") +
+      ggplot2::stat_qq(distribution = stats::qexp) +
+      ggplot2::aes(color = .data$signs) +
+      ggplot2::scale_color_manual(values = stone_colors_alternating()) +
+      ggplot2::facet_wrap(~ .data$bin_category) +
+      theme_clean() +
+      ggplot2::coord_equal() +
+      ggplot2::theme(aspect.ratio = 1)
 
     return(p)
   }
