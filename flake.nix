@@ -38,10 +38,14 @@
           ggplot2
           cowplot
           colorspace
-          patchwork
+          # patchwork
           forcats
 
-          # For development, not the package build
+          # For building the readme
+          eulerr
+          qvalue
+
+          # For development
           tidyverse
         ];
         rPackageList = vscodeRPackages ++ additionalRPackages;

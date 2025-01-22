@@ -13,10 +13,9 @@ items ranked highly across all of number of lists.
 
 Rank-gap statistics were developed to understand “overlap” and in
 genomics and high throughput biology, and in particular to complement
-the widespread use of Venn diagrams for this purpose.
-
-But we expect they may be useful for exploring multivariate
-distributions in other, more general contexts.
+the widespread use of Venn diagrams for this purpose when errors are
+independent across experiments or conditions. But we expect they may be
+useful for exploring multivariate distributions in other contexts.
 
 ## Example
 
@@ -36,15 +35,13 @@ The data are from (Luperchio et. al., 2021); `d_B_limma` contains output
 from a limma reanalysis of the raw read counts:
 
 ``` r
-tibble::tibble(d_B_limma) |> head(5)
-#> # A tibble: 5 × 25
-#>   ensembl_id logFC.KS1 AveExpr.KS1  t.KS1 P.Value.KS1 adj.P.Val.KS1 B.KS1 se.KS1
-#>   <chr>          <dbl>       <dbl>  <dbl>       <dbl>         <dbl> <dbl>  <dbl>
-#> 1 ENSMUSG00…    0.0535        6.96  0.878      0.402          0.772 -6.92 0.0609
-#> 2 ENSMUSG00…    0.221         1.35  1.08       0.306          0.711 -5.50 0.204 
-#> 3 ENSMUSG00…    0.176         5.98  1.40       0.195          0.633 -6.25 0.125 
-#> 4 ENSMUSG00…    0.759        -1.08  1.85       0.0966         0.533 -4.19 0.411 
-#> 5 ENSMUSG00…   -0.428         9.18 -1.63       0.152          0.594 -6.12 0.262 
+tibble::tibble(d_B_limma) |> head(3)
+#> # A tibble: 3 × 25
+#>   ensembl_id  logFC.KS1 AveExpr.KS1 t.KS1 P.Value.KS1 adj.P.Val.KS1 B.KS1 se.KS1
+#>   <chr>           <dbl>       <dbl> <dbl>       <dbl>         <dbl> <dbl>  <dbl>
+#> 1 ENSMUSG000…    0.0535        6.96 0.878       0.402         0.772 -6.92 0.0609
+#> 2 ENSMUSG000…    0.221         1.35 1.08        0.306         0.711 -5.50 0.204 
+#> 3 ENSMUSG000…    0.176         5.98 1.40        0.195         0.633 -6.25 0.125 
 #> # ℹ 17 more variables: se_unshrunk.KS1 <dbl>, logFC.KS2 <dbl>,
 #> #   AveExpr.KS2 <dbl>, t.KS2 <dbl>, P.Value.KS2 <dbl>, adj.P.Val.KS2 <dbl>,
 #> #   B.KS2 <dbl>, se.KS2 <dbl>, se_unshrunk.KS2 <dbl>, logFC.RT <dbl>,
@@ -76,7 +73,7 @@ Thus, the spike near 0 in the distribution indicates
 
 The histogram has been stratified by the signs of the *t*-scores,
 revealing that the excess concordance is driven by genes with the same
-signs in all 3 comparisons —i.e., either upregulated in all 3 MDEMs or
+signs in all 3 comparisons—i.e., either upregulated in all 3 MDEMs or
 downregulated in all 3 MDEMs.
 
 As a measure of concordance, rank-gap statistics implicitly emphasize
@@ -86,21 +83,50 @@ on high-ranked genes using the fact that rank-gap statistics are also
 uniformly distributed conditional on the maximum rank:
 
 ``` r
-with(
-  d_B_limma,
-  rank_gap_stephist(
-    t.KS1, t.KS2, t.RT,
-    n_max_rank_bins = 4
-  )
-)
+with(d_B_limma, rank_gap_stephist(t.KS1, t.KS2, t.RT, n_max_rank_bins = 4))
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="90%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="60%" />
 
 Here you can see that the signal of overlap is concentrated among the
-top 25% of genes based on their maximum rank across the 3 conditions.
+top 25% of genes (ordered by maximum rank across the 3 conditions or,
+loosely, “importance in any condition”).
 
 (We use “line histograms” here to avoid overplotting.)
+
+### Comparison with Venn diagrams of significant genes
+
+Let’s compare this with the standard approach in computational biology
+of computing Venn diagrams of (margianlly) statistically significant
+genes (with *q*-values \< 0.2 as estimated by `qvalue`):
+
+``` r
+require(eulerr)
+#> Loading required package: eulerr
+require(qvalue)
+#> Loading required package: qvalue
+require(ggplot2)
+#> Loading required package: ggplot2
+
+# Matrix of detected DE indicators
+m_DE <-
+  d_B_limma[c("P.Value.KS1", "P.Value.KS2", "P.Value.RT")] |>
+  as.matrix() |>
+  apply(2, \(p) qvalue::qvalue(p)$qvalues) |>
+  (\(x) x < .2)()
+
+colnames(m_DE) <- c("KS1", "KS2", "RT")
+
+venn(m_DE) |>
+  plot(quantities = TRUE, fills = FALSE) |>
+  cowplot::plot_grid() +
+  ggplot2::theme(plot.margin = ggplot2::margin(10, 10, 10, 10))
+```
+
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="35%" />
+
+There are very few genes detected as differentially expressed in all 3
+conditions.
 
 ## Installation
 
