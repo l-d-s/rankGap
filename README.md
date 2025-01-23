@@ -15,6 +15,8 @@ common “Venn diagrams of significant genes” approach (when errors are
 independent across experiments or conditions). But they may be useful
 more broadly.
 
+### The big idea
+
 In a genomics context we are often comparing ranked lists of genes
 across multiple conditions or experiments. Rank-gap statistics are
 defined for each gene $g$ by
@@ -30,15 +32,18 @@ $$
 …where “ranks” in the equation refers to the ranks of $g$ in each of the
 conditions under consideration.
 
-Rank-gap statistics have *p*-value-like properties: they are
-(approximately) uniformly distributed when gene ranks are independent,
-and smaller-than-uniform when gene ranks are closer than expected by
-chance across the conditions. These properties also hold within strata
-of $\max(\text{ranks}_g)$, which represents the importance of a gene in
-*any* of the conditions.
+Why are these statistics useful?
 
-We therefore adapt common graphics for displaying *p*-values to explore
-their distribution.
+- Rank-gap statistics have *p*-value-like properties: they are
+  (approximately) uniformly distributed when gene ranks are independent,
+  and smaller-than-uniform when gene ranks are closer than expected by
+  chance across the conditions. So we can explore this “excess
+  concordance” using familiar *p*-value techniques.
+
+- These properties also hold within strata of $\max(\text{ranks}_g)$,
+  which represents the maximum importance of a gene in *any* of the
+  conditions. This lets us focus attention on excess concordance near
+  the top of the lists.
 
 ## Example: overlapping gene expression changes in Mendelian Disorders of the Epigenetic Machinery
 
@@ -71,7 +76,7 @@ tibble::tibble(d_B_limma) |> head(3)
 #> #   B.RT <dbl>, se.RT <dbl>, se_unshrunk.RT <dbl>
 ```
 
-### Venn diagrams of significant genes
+### Analysis with Venn diagrams of significant genes
 
 We start with with the standard approach in computational biology of
 computing Venn diagrams of (margianlly) statistically significant genes:
@@ -88,8 +93,7 @@ require(ggplot2)
 m_de <-
   d_B_limma[c("P.Value.KS1", "P.Value.KS2", "P.Value.RT")] |>
   as.matrix() |>
-  apply(2, \(p) qvalue::qvalue(p)$qvalues) |>
-  (\(x) x < .2)()
+  apply(2, \(p) qvalue::qvalue(p)$qvalues < .2)
 
 colnames(m_de) <- c("KS1", "KS2", "RT")
 
@@ -101,8 +105,8 @@ venn(m_de) |>
 
 There are only 18 genes detected as differentially expressed in all 3
 conditions (using a threshold of *q* \< 0.2 estimated with the
-Storey-Tibshirani method from `qvalue`). This “vote counting” method (as
-it’s called in the meta-analysis literature) is known to be highly
+Storey-Tibshirani method from `qvalue`). This method, called “vote
+counting” in the meta-analysis literature, is known to be highly
 conservative when there are many effects with weak signals.
 
 ### Analysis with rank-gap statistics
@@ -110,8 +114,8 @@ conservative when there are many effects with weak signals.
 First, we visualize the distribution of rank-gap statistics in our data,
 stratified by the signs of the estimated underlying effects. We first
 create “signed scores” to use as input: in our case, signed log
-*p*-values. (Note that it can be misleading to use raw log fold-change
-estimates for this purpose; see the thesis chapter for details):
+*p*-values (it is misleading to use raw log fold-change estimates for
+this purpose; see the thesis chapter for details):
 
 ``` r
 d_B_limma <- transform(
@@ -135,7 +139,8 @@ downregulated in all 3 MDEMs. The size of the spike is evidence that
 there are of the order of hundreds of such genes.
 
 We can focus on genes of interest by stratifying the analysis based on
-the maximum rank statistic. Here we stratify using quartile bins:
+the maximum rank statistic. Here we stratify using quartile bins (we use
+“line histograms” to avoid overplotting):
 
 ``` r
 with(
@@ -145,15 +150,15 @@ with(
     n_max_rank_bins = 4))
 ```
 
-<img src="man/figures/README-rgap_stephist-1.png" width="60%" />
+<img src="man/figures/README-rgap_stephist-1.png" width="70%" />
 
-We use “line histograms” to avoid overplotting. The signal of excess
-concordance is concentrated among the top 25% of genes (ordered by
-maximum rank across the 3 conditions or, loosely, “importance in at
-least one condition”), and the specific genes involved may be much more
-easily identified than the Venn diagram analysis suggests.
+The signal of excess concordance is concentrated among the top 25% of
+genes (ordered by maximum rank across the 3 conditions or, loosely,
+“importance in at least one condition”).
 
-One way to do this is with a stratified *Q-Q* plot:
+Also the specific genes involved may be much more easily identified than
+the Venn diagram analysis suggests. One way to do this is with a
+stratified *Q-Q* plot:
 
 ``` r
 with(d_B_limma,
@@ -162,7 +167,15 @@ with(d_B_limma,
     n_max_rank_bins = 4))
 ```
 
-<img src="man/figures/README-rgap_qq-1.png" width="80%" />
+<img src="man/figures/README-rgap_qq-1.png" width="90%" />
+
+## Package structure
+
+- `rank_gap_hist`, `rank_gap_qq`, `rank_gap_stephist` – produce plots
+  from signed input statistics
+- `rank_gap_df` – produces a data frame (tibble) from signed input
+  statistics containing quantities needed for the plots
+- `rank_gap`, `signs_pm`, `concordances` – lower-level utility functions
 
 ## Installation
 
