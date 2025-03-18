@@ -189,10 +189,25 @@ pak::pak("l-d-s/rankGap")
 
 The repo comes with a Nix development environment; with flakes enabled
 you can try it out by cloning the repository and running `nix develop` or
-alternatively just running `nix develop "github:l-d-s/rankGap"`. The 
-environment includes [`radian`](https://github.com/randy3k/radian) and
-workspace settings for the 
+alternatively just running `nix develop "github:l-d-s/rankGap"`. This
+will drop you into an environment with R + prerequisites installed, along
+with [`radian`](https://github.com/randy3k/radian) and workspace settings 
+for the 
 [`VSCode R extension`](https://github.com/REditorSupport/vscode-R).
+
+Alternatively you can call the package using the standard `nixpkgs` R
+infrastructure: for example
+
+```bash
+nix shell --impure --expr '
+    with import (builtins.getFlake "github:nixos/nixpkgs") {};
+    rWrapper.override {packages = [
+        (builtins.getFlake "github:l-d-s/rankGap").packages.${system}.default
+        # Put other R packages here
+    ];}' \
+    -c R
+```
+... will drop you into an R session with `rankGap` installed.
 
 ## References
 
