@@ -209,7 +209,7 @@ nix shell --impure --expr '
 ```
 ... will drop you into an R session with `rankGap` installed.
 
-## References
+## Citation and references
 
 This package is based on
 
