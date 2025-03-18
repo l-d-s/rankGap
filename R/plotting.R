@@ -8,10 +8,11 @@
 #' @importFrom rlang .data
 #' @export
 rank_gap_hist <- function(
-    ...,
-    n_bins = 30,
-    ties_method = "random",
-    nonzero_adj = TRUE) {
+  ...,
+  n_bins = 30,
+  ties_method = "random",
+  nonzero_adj = TRUE
+) {
   d <- rank_gap_df(
     ...,
     ties_method = ties_method,
@@ -35,11 +36,12 @@ rank_gap_hist <- function(
 #' @importFrom rlang .data
 #' @export
 rank_gap_stephist <- function(
-    ...,
-    n_max_rank_bins = 1,
-    n_bins = 30,
-    ties_method = "random",
-    nonzero_adj = TRUE) {
+  ...,
+  n_max_rank_bins = 1,
+  n_bins = 30,
+  ties_method = "random",
+  nonzero_adj = TRUE
+) {
   d <- rank_gap_df(
     ...,
     ties_method = ties_method,
@@ -62,8 +64,8 @@ rank_gap_stephist <- function(
         paste0(
           c("top ", "bottom "),
           signif(
-            100 / (
-              c(1, 1 / (n_max_rank_bins - 1)) *
+            100 /
+              (c(1, 1 / (n_max_rank_bins - 1)) *
                 n_max_rank_bins),
             2
           ),
@@ -74,7 +76,8 @@ rank_gap_stephist <- function(
         # Would love a dplyr::case_when solution here...
         ifelse(
           d$max_rank_bin == n_max_rank_bins,
-          1, 2
+          1,
+          2
         ) |>
         factor(levels = 1:2, labels = bin_cat_labels)
     } else {
@@ -82,8 +85,8 @@ rank_gap_stephist <- function(
         paste0(
           c("top ", "next ", "bottom "),
           signif(
-            100 / (
-              c(1, 1, 1 / (n_max_rank_bins - 2)) *
+            100 /
+              (c(1, 1, 1 / (n_max_rank_bins - 2)) *
                 n_max_rank_bins),
             2
           ),
@@ -103,7 +106,6 @@ rank_gap_stephist <- function(
         ) |>
         factor(levels = 1:3, labels = bin_cat_labels)
     }
-
 
     p <-
       gg_p_hist_step(d, .data$r_gap, n_bins = n_bins) +
@@ -126,10 +128,11 @@ rank_gap_stephist <- function(
 #' @importFrom rlang .data
 #' @export
 rank_gap_qq <- function(
-    ...,
-    n_max_rank_bins = 1,
-    ties_method = "random",
-    nonzero_adj = TRUE) {
+  ...,
+  n_max_rank_bins = 1,
+  ties_method = "random",
+  nonzero_adj = TRUE
+) {
   d <- rank_gap_df(
     ...,
     ties_method = ties_method,
@@ -157,8 +160,8 @@ rank_gap_qq <- function(
         paste0(
           c("top ", "bottom "),
           signif(
-            100 / (
-              c(1, 1 / (n_max_rank_bins - 1)) *
+            100 /
+              (c(1, 1 / (n_max_rank_bins - 1)) *
                 n_max_rank_bins),
             2
           ),
@@ -169,7 +172,8 @@ rank_gap_qq <- function(
         # Would love a dplyr::case_when solution here...
         ifelse(
           d$max_rank_bin == n_max_rank_bins,
-          1, 2
+          1,
+          2
         ) |>
         factor(levels = 1:2, labels = bin_cat_labels)
     } else {
@@ -177,8 +181,8 @@ rank_gap_qq <- function(
         paste0(
           c("top ", "next ", "bottom "),
           signif(
-            100 / (
-              c(1, 1, 1 / (n_max_rank_bins - 2)) *
+            100 /
+              (c(1, 1, 1 / (n_max_rank_bins - 2)) *
                 n_max_rank_bins),
             2
           ),
@@ -198,7 +202,6 @@ rank_gap_qq <- function(
         ) |>
         factor(levels = 1:3, labels = bin_cat_labels)
     }
-
 
     p <-
       ggplot2::ggplot(d, ggplot2::aes(sample = -log(.data$r_gap))) +

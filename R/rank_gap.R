@@ -30,10 +30,11 @@ rank_gap <- function(..., ties_method = "random", nonzero_adj = TRUE) {
 #' @param ties_method,nonzero_adj Arguments passed to `rank_gap()`
 #' @export
 rank_gap_df <- function(
-    ...,
-    n_max_rank_bins = 1,
-    ties_method = "random",
-    nonzero_adj = TRUE) {
+  ...,
+  n_max_rank_bins = 1,
+  ties_method = "random",
+  nonzero_adj = TRUE
+) {
   signed_stats_list <- list(...)
   if (is.null(names(signed_stats_list))) {
     names(signed_stats_list) <- paste0("s", seq_along(signed_stats_list))

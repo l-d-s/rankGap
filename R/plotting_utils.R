@@ -14,24 +14,28 @@ theme_clean <- function(...) {
 }
 
 gg_hist <- function(
-    data,
-    x_var,
-    n_bins = 30,
-    breaks = NULL,
-    boundary = NULL,
-    ...) {
+  data,
+  x_var,
+  n_bins = 30,
+  breaks = NULL,
+  boundary = NULL,
+  ...
+) {
   ggplot2::ggplot(data, ggplot2::aes({{ x_var }})) +
     theme_clean() +
     ggplot2::geom_histogram(
-      bins = n_bins, color = "white",
-      breaks = breaks, boundary = boundary, ...
+      bins = n_bins,
+      color = "white",
+      breaks = breaks,
+      boundary = boundary,
+      ...
     ) +
     ggplot2::scale_y_continuous(
-      expand = ggplot2::expansion(0, .1), limits = c(0, NA),
+      expand = ggplot2::expansion(0, .1),
+      limits = c(0, NA),
       name = ""
     )
 }
-
 
 
 # Scales for p-value-like quantities
@@ -115,8 +119,14 @@ gg_p_density_line <- function(data, x_var, unif_guide = FALSE) {
 }
 
 tol_colors <- c(
-  "#117733", "#332288", "#AA4499", "#999933",
-  "#44AA99", "#882255", "#88CCEE", "#DDCC77",
+  "#117733",
+  "#332288",
+  "#AA4499",
+  "#999933",
+  "#44AA99",
+  "#882255",
+  "#88CCEE",
+  "#DDCC77",
   "#CC6677"
 )
 
@@ -137,8 +147,14 @@ tol_colors_alternating <- function() {
 
 stone_colors <-
   c(
-    "#396AB1", "#DA7C30", "#3E9651", "#CC2529",
-    "#535154", "#6B4C9A", "#922428", "#948B3D"
+    "#396AB1",
+    "#DA7C30",
+    "#3E9651",
+    "#CC2529",
+    "#535154",
+    "#6B4C9A",
+    "#922428",
+    "#948B3D"
   )
 
 stone_colors_alternating <- function() {
