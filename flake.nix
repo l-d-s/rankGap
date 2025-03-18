@@ -1,16 +1,14 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs =
     {
       self,
       nixpkgs,
-      flake-utils,
       ...
-    }@inp:
+    }:
 
     let
       l = nixpkgs.lib // builtins;
@@ -39,6 +37,7 @@
             devtools
           ];
           additionalRPackages = with rPackages; [
+            # Required by the package itself
             ggplot2
             cowplot
             colorspace
@@ -81,6 +80,24 @@
             radianWrapper
             pkgs.jq
           ];
+        }
+      );
+      packages = forAllSystems (
+        # Required by the package itself
+        system: pkgs: {
+          default = pkgs.rPackages.buildRPackage {
+            name = "rankGap";
+            src = ./.;
+            propagatedBuildInputs = with pkgs.rPackages; [
+              colorspace
+              cowplot
+              forcats
+              ggplot2
+              rlang
+              scales
+              tibble
+            ];
+          };
         }
       );
     };
