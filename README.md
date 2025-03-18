@@ -177,7 +177,7 @@ with(d_B_limma,
   statistics containing quantities needed for the plots
 - `rank_gap`, `signs_pm`, `concordances` – lower-level utility functions
 
-## Installation
+## Installation and development
 
 You can install the development version of `rankGap` from
 [GitHub](https://github.com/) with:
@@ -186,6 +186,13 @@ You can install the development version of `rankGap` from
 # install.packages("pak")
 pak::pak("l-d-s/rankGap")
 ```
+
+The repo comes with a Nix development environment; with flakes enabled
+you can try it out by cloning the repository and running `nix develop` or
+alternatively just running `nix develop "github:l-d-s/rankGap"`. The 
+environment includes [`radian`](https://github.com/randy3k/radian) and
+workspace settings for the 
+[`VSCode R extension`](https://github.com/REditorSupport/vscode-R).
 
 ## References
 
