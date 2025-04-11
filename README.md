@@ -42,8 +42,8 @@ Why are these statistics useful?
 
 - These properties also hold within strata of $\max(\text{ranks}_g)$,
   which represents the maximum importance of a gene in *any* of the
-  conditions. This lets us focus attention on excess concordance near
-  the top of the lists.
+  conditions. This lets us focus attention on greater-than-expected concordance
+  for genes ranked highly in each list.
 
 ## Example: overlapping gene expression changes in Mendelian Disorders of the Epigenetic Machinery
 
